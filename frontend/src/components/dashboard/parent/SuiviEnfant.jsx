@@ -55,18 +55,18 @@ const SuiviEnfant = () => {
                         <div className="relative h-48 bg-gray-100">
                             {ins.formation?.image ? (
                                <img 
-    src={ins.formation.image.startsWith('http') 
-        ? ins.formation.image 
-        : `http://localhost:8000/storage/${ins.formation.image}`
-    } 
-    alt={ins.formation.titre}
-    className="w-full h-full object-cover"
-    onError={(e) => {
-        // Si l'image plante toujours, on met l'icône par défaut
-        e.target.style.display = 'none'; 
-        e.target.parentNode.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-slate-100"><svg class="w-12 h-12 text-blue-500" ...></svg></div>';
-    }}
-/>
+                                src={ins.formation.image.startsWith('http') 
+                                    ? ins.formation.image 
+                                    : `http://localhost:8000/storage/${ins.formation.image}`
+                                } 
+                                alt={ins.formation.titre}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                
+                                    e.target.style.display = 'none'; 
+                                    e.target.parentNode.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-slate-100"><svg class="w-12 h-12 text-blue-500" ...></svg></div>';
+                                }}
+                                    />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center">
                                     <HiOutlineAcademicCap className="w-12 h-12 text-gray-300" />

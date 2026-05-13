@@ -12,7 +12,7 @@ const HeaderApprenant = () => {
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
 
-  // 1. Charger les infos utilisateur
+  // Charger les infos utilisateur
   useEffect(() => {
     const syncUser = () => {
       const rawData = localStorage.getItem('user');
@@ -29,7 +29,7 @@ const HeaderApprenant = () => {
     syncUser();
   }, []);
 
-  // 2. Charger les notifications depuis l'API
+  //  Charger les notifications depuis l'API
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await api.get('/apprenant/notifications');
@@ -68,7 +68,7 @@ const HeaderApprenant = () => {
     // Mise à jour de l'état local
     setNotifications(prevNotifications => 
       prevNotifications.map(n => 
-        n.id === id ? { ...n, est_lu: 1 } : n // On met 1 (ou true)
+        n.id === id ? { ...n, est_lu: 1 } : n 
       )
     );
   } catch (err) { 
@@ -139,7 +139,7 @@ console.log("Notifs non lues :", notifications.filter(n => !n.est_lu));
           )}
         </div>
         
-        {/* SECTION PROFIL (Déjà existante) */}
+        {/* SECTION PROFIL */}
         <div className="relative">
           <button
             onClick={() => { setDropdownOpen(!dropdownOpen); setNotifOpen(false); }}

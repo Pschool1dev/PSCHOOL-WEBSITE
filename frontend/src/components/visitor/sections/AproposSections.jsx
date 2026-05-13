@@ -1,92 +1,153 @@
-import { FaChalkboardTeacher } from 'react-icons/fa'; // Optionnel : icône pour le présentiel
+import { FaChalkboardTeacher, FaRocket, FaGlobe, FaUsers, FaLightbulb, FaCode, FaRobot, FaMicrochip } from 'react-icons/fa';
+import { HiOutlineAcademicCap, HiOutlineChip, HiOutlineLightningBolt } from 'react-icons/hi';
 
 const AProposSection = () => {
+  const domaines = [
+    { name: "Éducation", icon: <HiOutlineAcademicCap className="w-3 h-3" /> },
+    { name: "Santé", icon: <FaLightbulb className="w-3 h-3" /> },
+    { name: "Énergie", icon: <HiOutlineLightningBolt className="w-3 h-3" /> },
+    { name: "Informatique", icon: <FaCode className="w-3 h-3" /> },
+    { name: "Robotique", icon: <FaRobot className="w-3 h-3" /> },
+    { name: "IA", icon: <HiOutlineChip className="w-3 h-3" /> }
+  ];
+
   return (
-    <section id="apropos" className="py-10 bg-white">
-      <div className="max-w-7xl mx-auto px-4">
+    <section id="apropos" className="py-16 bg-white">
+      <div className="max-w-6xl mx-auto px-5">
         
         {/* En-tête */}
         <div className="text-center mb-12">
-          <span className="inline-block px-4 py-1 rounded-full font-bold text-green-700 text-xl  mb-4">
-            À propos de Nous
+          <span className="text-green-600 font-semibold text-sm uppercase tracking-wide">
+            À propos
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+          <h2 className="text-3xl font-bold text-gray-800 mt-2">
             Pourquoi choisir Programming School ?
           </h2>
+          <div className="w-16 h-0.5 bg-green-600 mx-auto mt-4"></div>
         </div>
 
         {/* Grille de trois cartes */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-6">
           
           {/* Carte 1 - Formation complète */}
-          <div className="bg-green-600 rounded-2xl p-8 shadow-xl hover:shadow-green-200 transition flex flex-col h-full">
-            <h3 className="text-white text-2xl mb-4">
-              Une formation complète et innovante
+          <div className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors">
+            <div className="text-green-400 text-3xl mb-4">
+              <FaRocket />
+            </div>
+            <h3 className="text-white text-xl font-semibold mb-3">
+              Formation complète et innovante
             </h3>
-            <p className="text-green-50 leading-relaxed">
+            <p className="text-gray-300 text-sm leading-relaxed">
               PSCHOOL propose un parcours d'apprentissage unique qui couvre le coding, 
               la robotique, l'électronique, la mécanique et l'intelligence artificielle 
               — tout sous un même toit. Nos programmes sont conçus pour les jeunes 
-              de 5 à 19 ans et plus, avec une approche STEAM.
+              de 5 à 19 ans et plus.
             </p>
           </div>
           
           {/* Carte 2 - École reconnue */}
-          <div className="bg-green-600 rounded-2xl p-8 shadow-xl hover:shadow-green-200 transition flex flex-col h-full">
-            <h3 className="text-white text-2xl mb-4">
-              Une école reconnue à l'international
+          <div className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors">
+            <div className="text-green-400 text-3xl mb-4">
+              <FaGlobe />
+            </div>
+            <h3 className="text-white text-xl font-semibold mb-3">
+              École reconnue à l'international
             </h3>
-            <p className="text-green-50 leading-relaxed">
+            <p className="text-gray-300 text-sm leading-relaxed mb-4">
               Avec plus de 2 000 apprenants formés depuis 2021
               et une médaille de bronze internationale, nous formons les futurs leaders du numérique.
-              Dépuis sa création , P.school a proposé des solutions dans les domaines suivants : 
+              Depuis sa création, P.school a proposé des solutions dans les domaines suivants :
             </p>
             
             {/* Domaines d'innovation */}
-            <div className="flex flex-wrap gap-2 mt-auto pt-2">
-              {["Éducation", "Santé", "Énergie", "Informatique", "IA"].map((domaine, index) => (
-                <span key={index} className="text-[10px] bg-white text-gray-600 px-2 py-1 rounded-full border border-gray-200">
-                  {domaine}
+            <div className="flex flex-wrap gap-2">
+              {domaines.map((domaine, index) => (
+                <span key={index} className="inline-flex items-center gap-1 text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded-md">
+                  {domaine.icon}
+                  {domaine.name}
                 </span>
               ))}
             </div>
           </div>
 
-          {/* Carte 3 - Formation en présentiel (La nouveauté) */}
-          <div className="bg-green-600 rounded-2xl p-8 shadow-xl hover:shadow-green-200 transition flex flex-col h-full">
-            <div className="text-white text-4xl mb-4">
-               <FaChalkboardTeacher />
+          {/* Carte 3 - Formation en présentiel */}
+          <div className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors">
+            <div className="text-green-400 text-3xl mb-4">
+              <FaChalkboardTeacher />
             </div>
-            <h3 className="text-2xl font-bold text-white mb-4">
-              Apprentissage en Présentiel
+            <h3 className="text-white text-xl font-semibold mb-3">
+              Apprentissage en présentiel
             </h3>
-            <p className="text-green-50 leading-relaxed">
+            <p className="text-gray-300 text-sm leading-relaxed">
               Pour une immersion totale et un encadrement personnalisé, toutes nos formations 
-              peuvent être suivies en <strong>présentiel</strong> dans nos centres. 
+              peuvent être suivies en <span className="text-green-400">présentiel</span> dans nos centres. 
               Nos experts accompagnent chaque élève physiquement pour garantir 
               une maîtrise parfaite des outils technologiques et du matériel robotique.
             </p>
+            <div className="mt-4 pt-4 border-t border-gray-700">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">  Ouagadougou</span>
+                <span className="text-gray-400">  Bobo-Dioulasso</span>
+              </div>
+            </div>
           </div>
           
         </div>
         
         {/* Statistiques supplémentaires */}
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div >
+        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-5">
+          <div className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
             <div className="text-2xl font-bold text-green-600">2000+</div>
-            <div className="text-xs text-gray-500">Apprenants formés</div>
+            <div className="text-xs text-gray-500 mt-1">Apprenants formés</div>
           </div>
-          <div >
+          <div className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
             <div className="text-2xl font-bold text-green-600">2021</div>
-            <div className="text-xs text-gray-500">Année de création</div>
+            <div className="text-xs text-gray-500 mt-1">Année de création</div>
           </div>
-          <div >
-            <div className="text-2xl font-bold text-green-600">Ouaga / Bobo</div>
-            <div className="text-xs text-gray-500">Centres physiques</div>
+          <div className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
+            <div className="text-2xl font-bold text-green-600">2</div>
+            <div className="text-xs text-gray-500 mt-1">Centres physiques</div>
           </div>
-          <div >
-            <div className="text-2xl font-bold text-green-600">7-19 ans+</div>
-            <div className="text-xs text-gray-500">Tranche d'âge</div>
+          <div className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
+            <div className="text-2xl font-bold text-green-600">5-19 ans+</div>
+            <div className="text-xs text-gray-500 mt-1">Tranche d'âge</div>
+          </div>
+        </div>
+
+        {/* Valeurs  */}
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <h3 className="text-xl font-semibold text-gray-800 text-center mb-6">
+            Nos valeurs
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <FaUsers className="text-green-600 text-sm" />
+              </div>
+              <p className="text-xs font-medium text-gray-700">Encadrement</p>
+              <p className="text-xs text-gray-400">Personnalisé</p>
+            </div>
+            <div className="text-center">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <FaCode className="text-green-600 text-sm" />
+              </div>
+              <p className="text-xs font-medium text-gray-700">Programme</p>
+              <p className="text-xs text-gray-400">Pratique</p>
+            </div>
+            <div className="text-center">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <FaRobot className="text-green-600 text-sm" />
+              </div>
+              <p className="text-xs font-medium text-gray-700">Équipement</p>
+              <p className="text-xs text-gray-400">Moderne</p>
+            </div>
+            <div className="text-center">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <FaMicrochip className="text-green-600 text-sm" />
+              </div>
+              <p className="text-xs font-medium text-gray-700">Innovation</p>
+              <p className="text-xs text-gray-400">Continue</p>
+            </div>
           </div>
         </div>
         

@@ -6,60 +6,78 @@ const temoignages = [
 
 const TemoignagesSections = () => {
   return (
-    <section id="temoignages" className="py-12 bg-white overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="temoignages" className="py-16 bg-gray-50">
+      <div className="max-w-6xl mx-auto px-5">
         
         {/* En-tête de section */}
-        <div className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest mb-4 border border-green-100">
+        <div className="text-center mb-12">
+          <span className="text-green-600 font-semibold text-sm uppercase tracking-wide">
             Témoignages
           </span>
-          <h2 className="text-3xl md:text-4xl font-black text-slate-700 uppercase leading-tight">
-            Ce que disent nos <span className="text-green-700">apprenants</span>
+          <h2 className="text-3xl font-bold text-gray-800 mt-2">
+            Ce que disent nos apprenants
           </h2>
-          <div className="w-20 h-1.5 bg-orange-500 mx-auto mt-4 rounded-full"></div>
+          <div className="w-16 h-0.5 bg-green-600 mx-auto mt-4"></div>
         </div>
 
         {/* Grille des témoignages */}
-        <div className="grid md:grid-cols-3 gap-8">
-          {temoignages.map((t) => (
+        <div className="grid md:grid-cols-3 gap-6">
+          {temoignages.map((t, index) => (
             <div 
               key={t.name} 
-              className="group bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 relative"
+              className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
             >
-              {/* Icône de citation décorative */}
-              <div className="absolute top-6 right-8 text-slate-100 group-hover:text-green-100 transition-colors text-6xl font-serif">
-                "
+              {/* Étoiles de notation */}
+              <div className="flex gap-0.5 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} className="text-amber-500 text-sm">★</span>
+                ))}
               </div>
 
-              <div className="relative z-10">
-                <div className="text-orange-400 text-lg mb-4 flex gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i}>★</span>
-                  ))}
+              {/* Texte du témoignage */}
+              <p className="text-gray-600 text-sm leading-relaxed mb-5">
+                "{t.text}"
+              </p>
+
+              {/* Informations de l'auteur */}
+              <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold text-sm">
+                  {t.avatar}
                 </div>
-
-                <p className="text-slate-600 text-base leading-relaxed italic mb-8">
-                  "{t.text}"
-                </p>
-
-                <div className="flex items-center gap-4 pt-6 border-t border-slate-50">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-green-200">
-                    {t.avatar}
+                <div>
+                  <div className="font-semibold text-gray-800 text-sm">
+                    {t.name}
                   </div>
-                  <div>
-                    <div className="font-bold text-slate-900 text-sm uppercase tracking-tight">
-                      {t.name}
-                    </div>
-                    <div className="text-green-600 text-[10px] font-black uppercase tracking-widest">
-                      {t.role}
-                    </div>
+                  <div className="text-green-600 text-xs">
+                    {t.role}
                   </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Section statistiques de satisfaction */}
+         {/*<div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 text-center">
+            <div>
+              <div className="text-2xl font-bold text-green-600">98%</div>
+              <div className="text-xs text-gray-500 mt-1">de satisfaction</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-green-600">500+</div>
+              <div className="text-xs text-gray-500 mt-1">apprenants formés</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-green-600">85%</div>
+              <div className="text-xs text-gray-500 mt-1">d'insertion pro</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-green-600">4.8/5</div>
+              <div className="text-xs text-gray-500 mt-1">note moyenne</div>
+            </div>
+          </div>
+        </div>*/}
       </div>
     </section>
   );

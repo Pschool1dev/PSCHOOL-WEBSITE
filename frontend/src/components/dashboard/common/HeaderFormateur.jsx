@@ -48,20 +48,20 @@ const HeaderFormateur = () => {
 
   return (
     <header className="bg-white px-10 py-5 flex items-center justify-between border-b border-slate-100">
-  {/* Élément 1 : Le message de bienvenue */}
+  {/* Le message de bienvenue */}
   <div className="flex flex-col">
     <h1 className="text-xl font-medium text-slate-700">
       Bienvenue ,  <span className="text-emerald-600 font-semibold">{userData.name}</span>
     </h1>
   </div>
 
-  {/* Élément 2 : Le bouton de notification (maintenant indépendant au centre) */}
+  {/* Le bouton de notification  */}
   <button className="p-2 text-slate-400 hover:text-emerald-600 transition-colors relative">
     <HiOutlineBell className="h-6 w-6" />
     <span className="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full border-2 border-white"></span>
   </button>
 
-  {/* Élément 3 : Le menu profil (à droite) */}
+  {/*  Le menu profil  */}
   <div className="relative">
     <button
       onClick={() => setDropdownOpen(!dropdownOpen)}
