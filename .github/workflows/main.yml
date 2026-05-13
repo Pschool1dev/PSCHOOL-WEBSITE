@@ -1,0 +1,45 @@
+name: Laravel Test Zakaria
+
+on:
+  push:
+    branches: [ "main" ] # On met main pour ton test actuel
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2' # On met une version plus récente pour Laravel
+
+    - name: Install Dependencies
+      # On ajoute "working-directory: backend" pour chaque étape !
+      working-directory: backend 
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Copy .env
+      working-directory: backend
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Generate key
+      working-directory: backend
+      run: php artisan key:generate
+
+    - name: Create Database
+      working-directory: backend
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+
+    - name: Execute tests
+      working-directory: backend
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan test
