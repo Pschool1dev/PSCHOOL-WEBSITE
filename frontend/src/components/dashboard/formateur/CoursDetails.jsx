@@ -2,15 +2,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../../services/api';
 import { 
-  HiOutlineArrowLeft, HiOutlinePlus, HiOutlineBookOpen, 
+  HiOutlineArrowLeft, HiOutlinePlus, 
   HiOutlineTrash, HiOutlinePencilAlt, HiOutlinePlay,
-  HiOutlineQuestionMarkCircle, HiX // Nouveaux imports pour le Quiz
+  HiOutlineQuestionMarkCircle, HiX 
 } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 import ModalCours from './ModalCours';
 import ConfirmationModale from './ConfirmationModale'; 
 import VideoModal from './VideoModal';
-import QuizzEditor from './QuizzEditor'; // Import de ton nouvel éditeur
+import QuizzEditor from './QuizzEditor'; 
 
 const CoursDetail = () => {
   const { id } = useParams();
@@ -52,7 +52,7 @@ const CoursDetail = () => {
     fetchData();
   }, [fetchData]);
 
-  // --- ACTIONS ---
+  // ACTIONS
 
   const handlePreview = (chapitre) => {
     if (!chapitre || !chapitre.contenu_url) {
@@ -165,7 +165,7 @@ const CoursDetail = () => {
         ))}
       </div>
 
-      {/* MODALE QUIZ (L'intégration demandée) */}
+      {/* MODALE QUIZ */}
       {isQuizModalOpen && coursForQuiz && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
           <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-50 rounded-[2.5rem] shadow-2xl animate-in zoom-in-95 duration-300">

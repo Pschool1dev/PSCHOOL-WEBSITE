@@ -46,13 +46,13 @@ const VueEnsemble = () => {
 const handleSendNotification = async () => {
   if (!message.trim()) return toast.error("Veuillez écrire un message");
 
-  // --- DEBUG : Vérifie ce que contient selectedUser avant l'envoi ---
-  console.log("Utilisateur sélectionné :", selectedUser);
+
+
 
   setSending(true);
   try {
     await api.post('/formateur/notifications/envoyer', {
-      // On s'assure d'envoyer l'ID, peu importe son nom dans l'objet React
+    
       user_id: selectedUser.id || selectedUser.ID || selectedUser.user_id, 
       titre: "Message de votre formateur",
       message: message
@@ -62,9 +62,9 @@ const handleSendNotification = async () => {
     setIsNotifyModalOpen(false);
     setMessage("");
   } catch (error) {
-    // Si ça échoue encore, on regarde le contenu exact de l'erreur
-    console.error("Erreur complète :", error.response?.data);
-    toast.error("Erreur de validation : user_id manquant");
+
+ 
+    toast.error("Erreur de validation ");
   } finally {
     setSending(false);
   }
@@ -162,7 +162,7 @@ const handleSendNotification = async () => {
         </div>
       </div>
 
-      {/* MODALE DE NOTIFICATION (P.School Design) */}
+      {/* MODALE DE NOTIFICATION */}
       {isNotifyModalOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-300">
           <div className="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden border border-white/20">

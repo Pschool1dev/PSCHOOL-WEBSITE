@@ -17,13 +17,13 @@ const QuizEditor = ({ coursId }) => {
     }
   ]);
 
-  // Ajoute cet useEffect au début de ton composant QuizEditor
+ 
 useEffect(() => {
   const chargerQuizExistant = async () => {
     try {
       const res = await api.get(`/formations/cours/${coursId}/quiz`);
       
-      // Si un quiz existe en base de données, on remplit l'état
+   
       if (res) {
         setQuizTitre(res.titre);
         if (res.questions && res.questions.length > 0) {
@@ -38,7 +38,7 @@ useEffect(() => {
   if (coursId) chargerQuizExistant();
 }, [coursId]);
 
-  // --- LOGIQUE QUESTIONS ---
+  // LOGIQUE QUESTIONS 
   const ajouterQuestion = () => {
     setQuestions([...questions, { 
       texte_question: '', 
@@ -58,7 +58,7 @@ useEffect(() => {
     }
   };
 
-  // --- LOGIQUE OPTIONS ---
+  // LOGIQUE OPTIONS 
   const ajouterOption = (qIndex) => {
     const newQuestions = [...questions];
     if (newQuestions[qIndex].options.length < 5) {
@@ -96,7 +96,7 @@ useEffect(() => {
 
   // --- SAUVEGARDE ---
   const sauvegarderQuiz = async () => {
-    // Vérification rapide
+   
     const estValide = questions.every(q => q.texte_question.trim() !== '' && q.options.every(o => o.texte_option.trim() !== ''));
     if (!estValide) return toast.error("Veuillez remplir tous les champs");
 

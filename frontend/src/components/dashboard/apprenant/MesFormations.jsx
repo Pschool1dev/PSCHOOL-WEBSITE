@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Ajout de l'import
+import { useNavigate } from 'react-router-dom';
 import { 
   HiOutlineBookOpen, 
   HiOutlineClock, 
@@ -12,7 +12,7 @@ import api from '../../../services/api';
 import toast from 'react-hot-toast';
 
 const MesFormations = () => {
-  const navigate = useNavigate(); // 2. Initialisation du hook
+  const navigate = useNavigate(); 
   const [formations, setFormations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('cours');
@@ -121,7 +121,7 @@ const MesFormations = () => {
                     <span>{new Date(item.created_at).toLocaleDateString('fr-FR')}</span>
                   </div>
                   
-                  {/* BOUTON MIS À JOUR : Redirection vers le Player */}
+                  {/* BOUTON Redirection vers le Player */}
                   <button 
                     disabled={item.statut === 'en_attente'}
                     onClick={() => navigate(`/apprenant/formation/${item.formation_id}`)}

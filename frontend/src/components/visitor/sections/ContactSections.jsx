@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { HiOutlineMail, HiOutlinePhone, HiOutlineLocationMarker } from 'react-icons/hi';
+import api from '../../../services/api'; 
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -24,154 +25,156 @@ const ContactSection = () => {
     setError('');
     
     try {
-      console.log('Message envoyé:', formData);
+      // Connexion réelle avec l'API Laravel
+      await api.post('/contact', formData);
+      
       setSubmitted(true);
+      // Réinitialisation du formulaire après succès
       setFormData({ nom: '', email: '', telephone: '', sujet: '', message: '' });
-      setTimeout(() => setSubmitted(false), 5000);
+      setTimeout(() => setSubmitted(false), 6000);
     } catch (err) {
-      setError('Une erreur est survenue. Veuillez réessayer.');
+      console.error("Erreur envoi contact:", err);
+      setError(err.response?.data?.message || 'Une erreur est survenue lors de l\'envoi. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section id="contact" className="py-24 bg-white font-sans">
-      <div className="max-w-7xl mx-auto px-6">
+    <section id="contact" className="py-16 bg-gray-50">
+      <div className="max-w-6xl mx-auto px-5">
         
-        {/* En-tête de section */}
-        <div className="mb-16">
-          <div className="flex items-center gap-2 mb-4">
-             <div className="w-10 h-[2px] bg-green-600"></div>
-             <span className="text-green-600 font-black text-[10px] uppercase tracking-[0.3em]">Contactez-nous</span>
-          </div>
-          <h2 className="text-5xl font-black text-slate-700 leading-tight">
-             Vouliez-vous nous parler d'un <span className=" text-green-700">Sujet ?</span>
+        <div className="mb-12 text-center">
+          <span className="text-green-600 font-semibold text-sm uppercase tracking-wide">Contactez-nous</span>
+          <h2 className="text-3xl font-bold text-gray-800 mt-2">
+            Parlons de votre projet
           </h2>
+          <div className="w-16 h-0.5 bg-green-600 mx-auto mt-4"></div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
+        <div className="grid lg:grid-cols-2 gap-8">
           
-          {/* COLONNE GAUCHE : Formulaire */}
-          <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-[0_30px_60px_rgba(0,0,0,0.03)]">
+          {/* Formulaire */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
             {submitted && (
-              <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-2xl text-sm font-bold border border-green-100 animate-bounce">
-                 Message envoyé avec succès !
+              <div className="mb-5 p-3 bg-green-50 text-green-700 rounded-md text-sm border border-green-200 shadow-sm">
+                Message envoyé avec succès ! L'équipe P.School vous répondra très rapidement.
               </div>
             )}
             
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid md:grid-cols-2 gap-5">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-slate-950 ml-2">Nom Complet</label>
+            {error && (
+              <div className="mb-5 p-3 bg-red-50 text-red-700 rounded-md text-sm border border-red-200 shadow-sm">
+                {error}
+              </div>
+            )}
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet <span className='text-red-600'>*</span> </label>
                   <input
                     type="text"
                     name="nom"
                     required
                     value={formData.nom}
                     onChange={handleChange}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-green-500 focus:bg-white transition-all text-sm font-medium"
-                    placeholder="Votre nom et prenom"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors"
+                    placeholder="Votre nom et prénom"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-slate-950 ml-2">Email</label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className='text-red-600'>*</span></label>
                   <input
                     type="email"
                     name="email"
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-green-500 focus:bg-white transition-all text-sm font-medium"
-                    placeholder="Votre adresse mail"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors"
+                    placeholder="votre@email.com"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-slate-950 ml-2">Téléphone</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone Whatsapp <span className='text-red-600'>*</span></label>
                 <input
                   type="tel"
                   name="telephone"
                   required
                   value={formData.telephone}
                   onChange={handleChange}
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-green-500 focus:bg-white transition-all text-sm font-medium"
-                  placeholder="Ex : +226 00 00 00 00"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors"
+                  placeholder="Ex : +226 XX XX XX XX"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-slate-900 ml-2">Sujet</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Sujet <span className='text-red-600'>*</span></label>
                 <input
                   type="text"
                   name="sujet"
                   required
                   value={formData.sujet}
                   onChange={handleChange}
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-green-500 focus:bg-white transition-all text-sm font-medium"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors"
                   placeholder="Comment pouvons-nous vous aider ?"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-slate-900 ml-2">Message</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Message <span className='text-red-600'>*</span></label>
                 <textarea
                   name="message"
                   rows="4"
                   required
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-green-500 focus:bg-white transition-all text-sm font-medium resize-none"
-                  placeholder="Décrivez votre besoin ici ..."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors resize-none"
+                  placeholder="Décrivez votre besoin ici..."
                 ></textarea>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-green-600 transition-all duration-300 shadow-xl shadow-slate-200 active:scale-95"
+                className="w-full py-3 bg-green-600 text-white rounded-md font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Envoi...' : 'Envoyer le message'}
+                {loading ? 'Envoi en cours...' : 'Envoyer le message'}
               </button>
             </form>
           </div>
 
-          {/* COLONNE DROITE : Infos + Maps */}
-          <div className="space-y-8">
-            {/* Cards d'infos rapides */}
+          {/* Infos + Maps */}
+          <div className="space-y-5">
             <div className="grid sm:grid-cols-2 gap-4">
-              <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
-                <HiOutlinePhone className="w-6 h-6 text-green-600 mb-3" />
-                <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Appelez-nous</p>
-                <p className="text-sm font-black text-slate-900">+226 02 88 05 82 ou  </p>
-                <p className="text-sm font-black text-slate-900"> +226 07 57 16 45 </p>
+              <div className="p-5 bg-white rounded-lg border border-gray-200">
+                <HiOutlinePhone className="w-6 h-6 text-green-600 mb-2" />
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Téléphone</p>
+                <p className="text-sm text-gray-800">+226 02 88 05 82</p>
+                <p className="text-sm text-gray-800">+226 07 57 16 45</p>
               </div>
-              <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
-                <HiOutlineMail className="w-6 h-6 text-green-600 mb-3" />
-                <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Email</p>
-                <p className="text-sm font-black text-slate-900">infos@pschool.pro</p>
+              <div className="p-5 bg-white rounded-lg border border-gray-200">
+                <HiOutlineMail className="w-6 h-6 text-green-600 mb-2" />
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Email</p>
+                <p className="text-sm text-gray-800">infos@pschool.pro</p>
               </div>
             </div>
 
-            {/* Localisation & Maps */}
-            <div className="bg-slate-900 rounded-[2.5rem] overflow-hidden p-2 shadow-2xl">
-              <div className="p-6 flex items-start gap-4">
-                <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center shrink-0">
-                  <HiOutlineLocationMarker className="w-6 h-6 text-green-400" />
-                </div>
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              <div className="p-5 flex items-start gap-3 border-b border-gray-200">
+                <HiOutlineLocationMarker className="w-5 h-5 text-green-600 mt-0.5" />
                 <div>
-                  <p className="text-white font-black text-sm uppercase tracking-wider">secteur 53, Ouaga 2000,</p>
-                  <p className="text-slate-400 text-xs mt-1">Boulevard Muammar Khadafi, Ouagadougou, Burkina Faso</p>
+                  <p className="font-semibold text-gray-800">Secteur 53, Ouaga 2000</p>
+                  <p className="text-sm text-gray-500 mt-0.5">Boulevard Muammar Khadafi, Ouagadougou, Burkina Faso</p>
                 </div>
               </div>
               
-              {/* Iframe Google Maps avec style arrondi */}
-              <div className="h-64 md:h-80 w-full rounded-[2rem] overflow-hidden">
+              <div className="h-64 w-full">
                 <iframe 
                   title="P.School Location"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3897.894746110535!2d-1.5022534251700728!3d12.322870787936061!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xe2ebd0c8acc045b%3A0x43f81f1a9af2130e!2sPROGRAMMING%20SCHOOL%20OUAGADOUGOU!5e0!3m2!1sfr!2sbf!4v1777542341593!5m2!1sfr!2sbf" 
-                  className="w-full h-full grayscale-[0.2] contrast-[1.1]"
+                  className="w-full h-full"
                   style={{ border: 0 }} 
                   allowFullScreen="" 
                   loading="lazy" 

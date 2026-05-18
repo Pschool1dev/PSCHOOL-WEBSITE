@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  HiOutlineMenu, HiOutlineX, HiOutlineBookOpen,
+  HiOutlineMenu,  HiOutlineBookOpen,
   HiOutlineUser, HiOutlineLogout, HiChevronRight
 } from 'react-icons/hi';
-
+import { useAuth } from '../../../contexts/AuthContext';
 const SidebarApprenant = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [userData, setUserData] = useState({ name: 'Apprenant' });
+  const { setUserData } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const SidebarApprenant = () => {
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+  },[setUserData]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -67,7 +67,7 @@ const SidebarApprenant = () => {
           <span className="text-[9px] uppercase tracking-[0.3em] text-emerald-600 font-bold">Espace Apprenant</span>
         </div>
 
-        {/* Navigation - Finesse & Couleur Bleu */}
+        {/* Navigation */}
         <nav className="flex-1 px-4 py-8 space-y-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -94,7 +94,7 @@ const SidebarApprenant = () => {
           })}
         </nav>
 
-        {/* Logout - Discret & Vert */}
+        {/* Logout */}
         <div className="p-6">
           <button 
             onClick={handleLogout}

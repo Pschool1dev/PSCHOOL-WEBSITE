@@ -12,7 +12,7 @@ const GestionCours = () => {
         <CoursDetails />
       ) : (
         <div className="flex flex-col items-center justify-center h-full py-20 px-6 text-center">
-          {/* Illustration Icone - Style Épuré */}
+          {/* Illustration Icone  */}
           <div className="relative mb-10">
             <div className="bg-blue-50 p-10 rounded-full border border-blue-100/50">
               <HiOutlineCursorClick className="w-14 h-14 text-blue-500 opacity-80" />
@@ -30,7 +30,7 @@ const GestionCours = () => {
             Sélectionnez une formation dans votre catalogue pour commencer à organiser vos chapitres.
           </p>
 
-          {/* Bouton Bleu Pro */}
+        
           <Link 
             to="/formateur/mes-formations"
             className="flex items-center gap-3 bg-blue-600 text-white px-10 py-4 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-100 active:scale-95"
@@ -39,7 +39,7 @@ const GestionCours = () => {
             Accéder à mes formations
           </Link>
 
-          {/* Guide Étapes - Style Gris/Blanc discret */}
+          {/* Guide Étapes  */}
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl w-full">
             <div className="p-5 bg-white rounded-2xl border border-slate-200/60 shadow-sm flex flex-col items-center">
               <span className="text-blue-600 text-xs font-black mb-2 px-2 py-1 bg-blue-50 rounded-md">01</span>

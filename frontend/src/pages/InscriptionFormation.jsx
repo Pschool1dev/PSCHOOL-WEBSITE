@@ -16,7 +16,6 @@ const InscriptionFormation = () => {
     const fetchFormation = async () => {
       try {
         setChargement(true);
-       
         const data = await api.get(`/formations/${formationId}`);
         setFormation(data);
         setErreur(false);
@@ -32,59 +31,41 @@ const InscriptionFormation = () => {
       fetchFormation();
     }
   }, [formationId]);
-const handlePaiementApprenant = async () => {
-  try {
-    await api.post('/inscriptions', {
-      formation_id: formation.id,
-      montant: formation.prix
-    });
-    
-    // Toast Succès avec style Dark
-    toast.success("Demande d'inscription enregistrée !", {
-      style: {
-        borderRadius: '12px',
-        background: '#1e293b', 
-        color: '#fff',
-        border: '1px solid #22c55e' // Bordure verte pour le succès
-      },
-    });
 
-    setTimeout(() => {
-      navigate('/apprenant');
-    }, 2000);
+  const handlePaiementApprenant = async () => {
+    try {
+      await api.post('/inscriptions', {
+        formation_id: formation.id,
+        montant: formation.prix
+      });
+      
+      toast.success("Demande d'inscription enregistrée !");
+      setTimeout(() => {
+        navigate('/apprenant');
+      }, 2000);
 
-  } catch (error) {
-    // On récupère le message précis du backend (ex: "Vous êtes déjà inscrit")
-    const messageErreur = error.response?.data?.message || "Erreur lors de l'inscription.";
-    
-    toast.error(messageErreur, {
-      style: {
-        borderRadius: '12px',
-        background: '#1e293b',
-        color: '#fff',
-        border: '1px solid #ef4444' // Bordure rouge pour l'erreur
-      },
-    });
-    
-    console.error("Détails erreur inscription:", error.response);
-  }
-};
+    } catch (error) {
+      const messageErreur = error.response?.data?.message || "Erreur lors de l'inscription.";
+      toast.error(messageErreur);
+      console.error("Détails erreur inscription:", error.response);
+    }
+  };
 
   if (chargement) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900">
-        <div className="w-12 h-12 border-4 border-slate-700 border-t-green-500 rounded-full animate-spin mb-4"></div>
-        <p className="text-slate-400 font-bold">Chargement de la formation...</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+        <div className="w-10 h-10 border-3 border-gray-200 border-t-green-600 rounded-full animate-spin mb-3"></div>
+        <p className="text-gray-500">Chargement de la formation...</p>
       </div>
     );
   }
 
   if (erreur || !formation) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-center px-4">
-        <h2 className="text-2xl font-black text-white mb-2">Oups !</h2>
-        <p className="text-slate-400 mb-6">Impossible de charger les détails de cette formation.</p>
-        <Link to="/" className="px-8 py-3 bg-green-600 text-white font-bold rounded-xl shadow-lg">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center px-4">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Oups !</h2>
+        <p className="text-gray-500 mb-6">Impossible de charger les détails de cette formation.</p>
+        <Link to="/" className="px-6 py-2.5 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition-colors">
           Retourner à l'accueil
         </Link>
       </div>
@@ -92,69 +73,70 @@ const handlePaiementApprenant = async () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 py-12 px-6 font-sans">
+    <div className="min-h-screen bg-gray-50 py-10 px-5">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-slate-900 rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-800">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
           <div className="flex flex-col md:flex-row">
             
             {/* Section Image */}
-            <div className="md:w-1/2 h-64 md:h-auto relative">
+            <div className="md:w-2/5 h-56 md:h-auto relative bg-gray-100">
               <img 
                 src={formation.image} 
                 alt={formation.titre}
-                className="w-full h-full object-cover opacity-80"
+                className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
-              <div className="absolute top-6 left-6">
-                <span className="bg-green-600 text-white text-[10px] font-black uppercase px-3 py-1.5 rounded-lg shadow-xl">
+              <div className="absolute top-4 left-4">
+                <span className="bg-green-600 text-white text-xs font-medium px-2 py-1 rounded">
                   {formation.categorie}
                 </span>
               </div>
             </div>
 
             {/* Section Contenu */}
-            <div className="md:w-1/2 p-10 flex flex-col justify-center">
-              <h1 className="text-3xl font-black text-white mb-4 leading-tight">
-                Inscription à la formation : <br/>
-                <span className="text-green-500">{formation.titre}</span>
+            <div className="md:w-3/5 p-6">
+              <h1 className="text-2xl font-bold text-gray-800 mb-3">
+                Inscription à la formation
               </h1>
+              <h2 className="text-xl font-semibold text-green-600 mb-4">
+                {formation.titre}
+              </h2>
               
-              <div className="flex gap-4 mb-8">
-                <div className="bg-slate-800 px-4 py-2 rounded-xl border border-slate-700">
-                  <p className="text-[9px] text-slate-500 font-black uppercase">Durée</p>
-                  <p className="text-sm font-bold text-slate-200">{formation.duree}</p>
+              <div className="flex gap-3 mb-6">
+                <div className="bg-gray-100 px-3 py-2 rounded-md">
+                  <p className="text-xs text-gray-500 uppercase font-medium">Durée</p>
+                  <p className="text-sm font-semibold text-gray-700">{formation.duree}</p>
                 </div>
-                <div className="bg-green-900/20 px-4 py-2 rounded-xl border border-green-500/20">
-                  <p className="text-[9px] text-green-500 font-black uppercase">Tarif</p>
-                  <p className="text-sm font-bold text-green-400">{Number(formation.prix).toLocaleString()} FCFA</p>
+                <div className="bg-green-50 px-3 py-2 rounded-md border border-green-200">
+                  <p className="text-xs text-green-600 uppercase font-medium">Tarif</p>
+                  <p className="text-sm font-semibold text-green-700">{Number(formation.prix).toLocaleString()} FCFA</p>
                 </div>
               </div>
 
-              <p className="text-slate-400 mb-10 text-sm leading-relaxed italic">
-                "{formation.description}"
+              <p className="text-gray-600 mb-6 text-sm leading-relaxed">
+                {formation.description}
               </p>
 
               {/* LOGIQUE CONDITIONNELLE : PARENT VS APPRENANT */}
               {user?.role === 'parent' ? (
-                <div className="p-6 bg-blue-900/10 border border-blue-500/20 rounded-2xl">
-                  <p className="text-blue-400 text-xs font-bold mb-4 text-center">
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-blue-700 text-sm mb-3">
                     Note aux parents : Veuillez inscrire vos enfants directement depuis votre espace de gestion.
                   </p>
                   <button 
                     onClick={() => navigate('/parent')}
-                    className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-black uppercase tracking-widest rounded-xl transition-all shadow-lg"
+                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
                   >
-                    Aller dans mon Espace Parent
+                    Aller dans mon espace parent
                   </button>
                 </div>
               ) : (
-                <div className="p-6 bg-slate-800/50 rounded-2xl border border-slate-700">
-                  <p className="text-slate-400 text-[10px] font-bold mb-4 uppercase text-center tracking-widest">
+                <div className="p-4 bg-gray-50 rounded-md border border-gray-200">
+                  <p className="text-gray-600 text-sm mb-3 text-center">
                     Finaliser votre inscription personnelle
                   </p>
                   <button 
                     onClick={handlePaiementApprenant}
-                    className="w-full py-4 bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-widest rounded-xl transition-all shadow-lg"
+                    className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors"
                   >
                     Confirmer votre inscription
                   </button>
@@ -165,8 +147,8 @@ const handlePaiementApprenant = async () => {
           </div>
         </div>
         
-        <div className="mt-8 text-center">
-          <Link to="/" className="text-slate-500 hover:text-green-500 text-sm font-bold transition-colors">
+        <div className="mt-6 text-center">
+          <Link to="/" className="text-gray-500 hover:text-green-600 text-sm transition-colors">
             ← Retour aux formations
           </Link>
         </div>
