@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { HiOutlineHome, HiOutlineCog } from 'react-icons/hi';
+import { HiOutlineHome, HiOutlineBookOpen, HiOutlineCreditCard, HiOutlineCog } from 'react-icons/hi';
 import api from '../../../services/api'; 
 import Statistiques from './Statistiques';
 
