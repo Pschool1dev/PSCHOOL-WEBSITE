@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { HiOutlineSearch, HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineBookOpen, HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
-// CORRECTION : Vérifie bien le nom du fichier (sans 's' si c'est ModaleFormation.jsx)
-import ModaleFormations from './ModaleFormations'; 
+
+import ModaleFormation from './ModaleFormation'; 
 import ConfirmationSuppression from './ConfirmationSuppression';
 import Toast from '../../../components/Toast';
 import api from '../../../services/api';
