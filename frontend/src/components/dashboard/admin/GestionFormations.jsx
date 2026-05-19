@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { HiOutlineSearch, HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineBookOpen, HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
-
 import ModaleFormation from './ModaleFormation'; 
 import ConfirmationSuppression from './ConfirmationSuppression';
 import Toast from '../../../components/Toast';
@@ -19,20 +18,15 @@ const GestionFormations = () => {
   const [categoriesListe, setCategoriesListe] = useState([]);
   const [toast, setToast] = useState(null);
 
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-  };
-
+  const showToast = (message, type = 'success') => setToast({ message, type });
   const hideToast = () => setToast(null);
 
   const fetchFormations = async () => {
     try {
       setChargement(true);
       const response = await api.get('/formations');
-      // On s'assure de récupérer data si ton instance axios ne le fait pas automatiquement
       setFormations(response.data || response); 
     } catch (error) {
-      console.error("Erreur de chargement:", error);
       showToast("Erreur lors du chargement des formations", "error");
     } finally {
       setChargement(false);
@@ -44,7 +38,6 @@ const GestionFormations = () => {
       const response = await api.get('/formateurs');
       setFormateurs(response.data || response);
     } catch (error) {
-      console.error("Erreur chargement formateurs:", error);
       setFormateurs([]);
     }
   };
@@ -63,27 +56,25 @@ const GestionFormations = () => {
 
   const handleSave = async (formData, isEdit) => {
     try {
-      const config = {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      };
+      const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 
       if (isEdit && formationSelectionnee) {
-        const id = formationSelectionnee.id;
-        // On ajoute le spoofing de méthode pour Laravel
-        formData.append('_method', 'PUT'); 
-        await api.post(`/formations/${id}`, formData, config);
-        showToast("Formation modifiée avec succès !");
+        // Le _method: PUT est déjà ajouté dans la modale, donc on utilise POST
+        await api.post(`/formations/${formationSelectionnee.id}`, formData, config);
+        showToast("Formation mise à jour !");
       } else {
         await api.post('/formations', formData, config);
-        showToast("Formation créée avec succès !");
+        showToast("Formation créée !");
       }
       
       await fetchFormations();
       setModaleOuverte(false);
     } catch (error) {
-      console.error("Erreur save:", error);
-      const msg = error.response?.data?.message || "Erreur lors de l'enregistrement";
-      showToast(msg, "error");
+      console.error("Détail erreur:", error.response?.data);
+      // On affiche l'erreur spécifique du validateur Laravel si elle existe
+      const backendMessage = error.response?.data?.message || error.response?.data?.errors;
+      const errorMsg = typeof backendMessage === 'object' ? "Erreur de validation des champs" : backendMessage;
+      showToast(errorMsg || "Erreur lors de l'enregistrement", "error");
     }
   };
 
@@ -92,9 +83,9 @@ const GestionFormations = () => {
       await api.delete(`/formations/${formationASupprimer.id}`);
       setSuppressionOuverte(false);
       await fetchFormations();
-      showToast("Formation supprimée avec succès !");
+      showToast("Formation supprimée !");
     } catch (error) {
-      showToast("Erreur lors de la suppression", "error");
+      showToast("Erreur de suppression", "error");
     }
   };
 
@@ -109,26 +100,25 @@ const GestionFormations = () => {
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 tracking-tight font-heading">Gestion des Formations</h1>
+          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Gestion des Formations</h1>
           <p className="text-gray-500 text-sm">Pilotez le catalogue de P.School</p>
         </div>
         <button 
           onClick={() => { setFormationSelectionnee(null); setModaleOuverte(true); }}
-          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 font-bold"
+          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl shadow-sm transition-all font-bold"
         >
           <HiOutlinePlus className="w-5 h-5" />
           Ajouter une formation
         </button>
       </div>
 
-      {/* Barre de recherche et filtres */}
       <div className="bg-white p-4 rounded-xl shadow-sm border mb-6 flex flex-col md:flex-row gap-4">
         <div className="flex-1 relative">
           <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input 
             type="text" 
             placeholder="Rechercher par titre..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg outline-none"
             value={recherche}
             onChange={(e) => setRecherche(e.target.value)}
           />
@@ -146,7 +136,7 @@ const GestionFormations = () => {
 
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         {chargement ? (
-          <div className="p-12 text-center text-gray-400 italic animate-pulse">Chargement du catalogue...</div>
+          <div className="p-12 text-center text-gray-400 italic">Chargement...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -165,11 +155,7 @@ const GestionFormations = () => {
                   <tr key={f.id} className="hover:bg-gray-50/50 transition-colors group">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <img 
-                          src={f.image?.startsWith('http') ? f.image : 'https://via.placeholder.com/150'} 
-                          className="w-12 h-12 object-cover rounded-lg border shadow-sm" 
-                          alt="" 
-                        />
+                        <img src={f.image} className="w-12 h-12 object-cover rounded-lg border shadow-sm" alt="" />
                         <div>
                           <div className="font-bold text-gray-800 line-clamp-1">{f.titre}</div>
                           <div className="text-[10px] text-gray-400 font-bold uppercase">{f.duree} • {f.public_cible}</div>
@@ -180,43 +166,22 @@ const GestionFormations = () => {
                       <span className="text-[10px] font-black text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md uppercase">{f.categorie}</span>
                     </td>
                     <td className="p-4 text-center text-sm font-black text-gray-700">{f.nb_modules}</td>
-                    <td className="p-4 font-black text-green-600 text-sm whitespace-nowrap">
-                        {f.prix?.toLocaleString()} <span className="text-[9px]">FCFA</span>
-                    </td>
+                    <td className="p-4 font-black text-green-600 text-sm">{f.prix?.toLocaleString()} <span className="text-[9px]">FCFA</span></td>
                     <td className="p-4 text-center">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
-                        f.statut === 'actif' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
-                      }`}>
-                        {f.statut === 'actif' ? <><HiOutlineEye /> Actif</> : <><HiOutlineEyeOff /> Inactif</>}
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${f.statut === 'actif' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
+                        {f.statut === 'actif' ? "Actif" : "Inactif"}
                       </span>
                     </td>
                     <td className="p-4 text-center">
                       <div className="flex justify-center gap-1">
-                        <button 
-                          onClick={() => { setFormationSelectionnee(f); setModaleOuverte(true); }}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition"
-                        >
-                          <HiOutlinePencil className="w-5 h-5" />
-                        </button>
-                        <button 
-                          onClick={() => { setFormationASupprimer(f); setSuppressionOuverte(true); }}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition"
-                        >
-                          <HiOutlineTrash className="w-5 h-5" />
-                        </button>
+                        <button onClick={() => { setFormationSelectionnee(f); setModaleOuverte(true); }} className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition"><HiOutlinePencil className="w-5 h-5" /></button>
+                        <button onClick={() => { setFormationASupprimer(f); setSuppressionOuverte(true); }} className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition"><HiOutlineTrash className="w-5 h-5" /></button>
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            
-            {formationsFiltrees.length === 0 && (
-              <div className="p-20 text-center text-gray-400">
-                <HiOutlineBookOpen className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                <p className="font-medium text-sm">Aucun programme trouvé.</p>
-              </div>
-            )}
           </div>
         )}
       </div>

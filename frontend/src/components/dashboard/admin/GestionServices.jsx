@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { HiOutlineSearch, HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi';
-import ModaleService from './ModaleServices'; // On crée celui-là après
+import ModaleService from './ModaleServices';
 import ConfirmationSuppression from './ConfirmationSuppression';
 import Toast from '../../../components/Toast';
 import api from '../../../services/api';
@@ -17,13 +17,12 @@ const GestionServices = () => {
   const [toast, setToast] = useState(null);
 
   const showToast = (message, type = 'success') => setToast({ message, type });
-  const hideToast = () => setToast(null);
 
   const fetchServices = async () => {
     try {
       setChargement(true);
       const data = await api.get('/services');
-      setServices(data);
+      setServices(Array.isArray(data) ? data : []);
     } catch (error) {
       showToast("Erreur lors du chargement des services", "error");
     } finally {
@@ -37,12 +36,13 @@ const GestionServices = () => {
     try {
       if (isEdit) {
         const id = formData.get('id');
-        formData.append('_method', 'PUT'); // Indispensable pour l'upload d'image en modification
+        // Laravel nécessite _method: PUT pour traiter du FormData via POST
+        formData.append('_method', 'PUT'); 
         await api.post(`/services/${id}`, formData);
-        showToast("Service mis à jour !", "success");
+        showToast("Service mis à jour !");
       } else {
         await api.post('/services', formData);
-        showToast("Nouveau service ajouté !", "success");
+        showToast("Nouveau service ajouté !");
       }
       await fetchServices();
       setModaleOuverte(false);
@@ -56,7 +56,7 @@ const GestionServices = () => {
       await api.delete(`/services/${serviceASupprimer.id}`);
       setSuppressionOuverte(false);
       await fetchServices();
-      showToast("Service supprimé !", "success");
+      showToast("Service supprimé !");
     } catch (error) {
       showToast("Erreur lors de la suppression", "error");
     }
@@ -69,12 +69,12 @@ const GestionServices = () => {
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
-      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Gestion des Services</h1>
-          <p className="text-gray-500">Gérez les prestations affichées sur la vitrine</p>
+          <p className="text-gray-500">Gérez les prestations de P.School affichées sur la vitrine</p>
         </div>
         <button 
           onClick={() => { setServiceSelectionne(null); setModaleOuverte(true); }}
@@ -96,7 +96,7 @@ const GestionServices = () => {
           />
         </div>
         <select 
-          className="px-4 py-2 border border-gray-200 rounded-lg outline-none"
+          className="px-4 py-2 border border-gray-200 rounded-lg outline-none cursor-pointer"
           value={filtreStatut}
           onChange={(e) => setFiltreStatut(e.target.value)}
         >
@@ -122,10 +122,18 @@ const GestionServices = () => {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {servicesFiltres.map((s) => (
+                {servicesFiltres.length > 0 ? servicesFiltres.map((s) => (
                   <tr key={s.id} className="hover:bg-gray-50 transition">
                     <td className="p-4">
-                      {s.image && <img src={s.image} className="w-12 h-12 object-cover rounded-lg border" alt="" />}
+                      <div className="w-12 h-12 rounded-lg border bg-gray-100 overflow-hidden">
+                        {s.image ? (
+                          <img src={s.image} className="w-full h-full object-cover" alt={s.titre} />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-300">
+                             <HiOutlineSearch />
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4 font-bold text-gray-800">{s.titre}</td>
                     <td className="p-4 text-sm text-gray-500 max-w-xs truncate">{s.description}</td>
@@ -147,7 +155,11 @@ const GestionServices = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
+                )) : (
+                  <tr>
+                    <td colSpan="5" className="p-8 text-center text-gray-400">Aucun service trouvé</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

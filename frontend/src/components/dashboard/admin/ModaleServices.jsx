@@ -13,7 +13,7 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
     const [apercuImage, setApercuImage] = useState(null);
 
     useEffect(() => {
-        if (serviceAModifier) {
+        if (serviceAModifier && isOpen) {
             setFormData({
                 id: serviceAModifier.id,
                 titre: serviceAModifier.titre || '',
@@ -21,12 +21,22 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
                 statut: serviceAModifier.statut || 'actif'
             });
             setApercuImage(serviceAModifier.image);
-        } else {
+            setImageFile(null);
+        } else if (isOpen) {
             setFormData({ id: '', titre: '', description: '', statut: 'actif' });
             setApercuImage(null);
             setImageFile(null);
         }
     }, [serviceAModifier, isOpen]);
+
+    // Nettoyage de l'URL d'aperçu pour éviter les fuites mémoire
+    useEffect(() => {
+        return () => {
+            if (apercuImage && apercuImage.startsWith('blob:')) {
+                URL.revokeObjectURL(apercuImage);
+            }
+        };
+    }, [apercuImage]);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -53,9 +63,8 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
-                {/* Header */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
                 <div className="flex justify-between items-center p-6 border-b">
                     <h2 className="text-xl font-bold text-gray-800">
                         {serviceAModifier ? 'Modifier le service' : 'Ajouter un nouveau service'}
@@ -66,86 +75,84 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                    {/* Upload Image */}
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Image du service</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Image illustrative</label>
                         <div className="flex items-center gap-4">
-                            <div className="relative w-24 h-24 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center overflow-hidden bg-gray-50">
+                            <div className="relative w-24 h-24 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center overflow-hidden bg-gray-50 shadow-inner">
                                 {apercuImage ? (
                                     <img src={apercuImage} alt="Aperçu" className="w-full h-full object-cover" />
                                 ) : (
                                     <HiOutlinePhotograph className="w-8 h-8 text-gray-300" />
                                 )}
                             </div>
-                            <input 
-                                type="file" 
-                                id="image-upload" 
-                                className="hidden" 
-                                accept="image/*"
-                                onChange={handleImageChange}
-                            />
-                            <label 
-                                htmlFor="image-upload" 
-                                className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition"
-                            >
-                                Choisir une image
-                            </label>
+                            <div className="flex flex-col gap-2">
+                                <input 
+                                    type="file" 
+                                    id="image-upload" 
+                                    className="hidden" 
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                />
+                                <label 
+                                    htmlFor="image-upload" 
+                                    className="cursor-pointer bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm"
+                                >
+                                    {apercuImage ? 'Changer l\'image' : 'Choisir une image'}
+                                </label>
+                                <p className="text-[10px] text-gray-400">JPG, PNG ou WebP. Max 2Mo.</p>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Titre */}
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-1">Nom du service</label>
                         <input 
                             type="text" 
                             required
                             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
-                            placeholder="ex: Développement Web, Robotique..."
+                            placeholder="ex: Conception d'Applications"
                             value={formData.titre}
                             onChange={(e) => setFormData({...formData, titre: e.target.value})}
                         />
                     </div>
 
-                    {/* Description */}
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
                         <textarea 
                             required
-                            rows="4"
+                            rows="3"
                             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition resize-none"
-                            placeholder="Décrivez brièvement le service..."
+                            placeholder="Détaillez brièvement ce service..."
                             value={formData.description}
                             onChange={(e) => setFormData({...formData, description: e.target.value})}
                         />
                     </div>
 
-                    {/* Statut */}
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Statut de visibilité</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Statut</label>
                         <select 
-                            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
+                            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition cursor-pointer"
                             value={formData.statut}
                             onChange={(e) => setFormData({...formData, statut: e.target.value})}
                         >
-                            <option value="actif">Actif (Visible sur la vitrine)</option>
+                            <option value="actif">Actif (Visible sur le site)</option>
                             <option value="inactif">Inactif (Masqué)</option>
                         </select>
                     </div>
 
-                    {/* Footer Actions */}
-                    <div className="flex justify-end gap-3 pt-4">
+                    <div className="flex justify-end gap-3 pt-4 border-t">
                         <button 
                             type="button" 
                             onClick={onClose}
-                            className="px-6 py-2.5 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition"
+                            className="px-6 py-2.5 text-gray-600 font-medium hover:bg-gray-50 rounded-xl transition"
                         >
                             Annuler
                         </button>
                         <button 
                             type="submit"
-                            className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg shadow-green-200 transition-all active:scale-95"
+                            className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-md transition-all active:scale-95"
                         >
-                            {serviceAModifier ? 'Enregistrer les modifications' : 'Créer le service'}
+                            {serviceAModifier ? 'Mettre à jour' : 'Créer le service'}
                         </button>
                     </div>
                 </form>
