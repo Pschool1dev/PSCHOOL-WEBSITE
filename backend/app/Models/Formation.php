@@ -17,7 +17,8 @@ class Formation extends Model
     'statut',
     'categorie',
     'public_cible', 
-    'image'
+    'image',
+    'public_id'
 ];
 public function inscriptions()
 {
