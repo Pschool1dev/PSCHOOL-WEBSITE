@@ -12,7 +12,6 @@ const api = {
             ...options.headers,
         };
         
-       
         if (!isFormData) {
             headers['Content-Type'] = 'application/json';
         }
@@ -30,13 +29,21 @@ const api = {
             if (response.status === 401) {
                 localStorage.removeItem('token');
                 window.location.href = '/login';
-                return;
+                throw new Error('Non authentifié');
             }
 
             const data = await response.json();
-            if (!response.ok) throw data;
+            
+            if (!response.ok) {
+                // Conserver les détails de l'erreur
+                const error = new Error(data.message || 'Erreur API');
+                error.response = { data, status: response.status };
+                throw error;
+            }
+            
             return data;
         } catch (error) {
+            console.error('API Error:', error);
             throw error;
         }
     },
@@ -53,9 +60,27 @@ const api = {
     },
 
     put(endpoint, data) {
+        const isFormData = data instanceof FormData;
+        
+        // Pour Laravel, on utilise POST avec _method=PUT quand c'est du FormData
+        if (isFormData) {
+            // Cloner le FormData pour ne pas modifier l'original
+            const formDataWithMethod = new FormData();
+            for (let [key, value] of data.entries()) {
+                formDataWithMethod.append(key, value);
+            }
+            formDataWithMethod.append('_method', 'PUT');
+            
+            return this.request(endpoint, {
+                method: 'POST',
+                body: formDataWithMethod
+            });
+        }
+        
+        // Pour le JSON standard
         return this.request(endpoint, {
             method: 'PUT',
-            body: data instanceof FormData ? data : JSON.stringify(data)
+            body: JSON.stringify(data)
         });
     },
 

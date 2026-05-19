@@ -17,6 +17,7 @@ const GestionServices = () => {
   const [toast, setToast] = useState(null);
 
   const showToast = (message, type = 'success') => setToast({ message, type });
+  const hideToast = () => setToast(null);
 
   const fetchServices = async () => {
     try {
@@ -24,30 +25,51 @@ const GestionServices = () => {
       const data = await api.get('/services');
       setServices(Array.isArray(data) ? data : []);
     } catch (error) {
+      console.error("Erreur fetch:", error);
       showToast("Erreur lors du chargement des services", "error");
     } finally {
       setChargement(false);
     }
   };
 
-  useEffect(() => { fetchServices(); }, []);
+  useEffect(() => { 
+    fetchServices(); 
+  }, []);
 
   const handleSave = async (formData, isEdit) => {
     try {
-      if (isEdit) {
-        const id = formData.get('id');
-        // Laravel nécessite _method: PUT pour traiter du FormData via POST
-        formData.append('_method', 'PUT'); 
-        await api.post(`/services/${id}`, formData);
-        showToast("Service mis à jour !");
+      const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+
+      if (isEdit && serviceSelectionne) {
+        // Utilisation de PUT pour la mise à jour (géré automatiquement par api.put)
+        await api.put(`/services/${serviceSelectionne.id}`, formData, config);
+        showToast("Service mis à jour avec succès !");
       } else {
-        await api.post('/services', formData);
-        showToast("Nouveau service ajouté !");
+        // Utilisation de POST pour la création
+        await api.post('/services', formData, config);
+        showToast("Nouveau service ajouté avec succès !");
       }
+      
       await fetchServices();
       setModaleOuverte(false);
+      setServiceSelectionne(null); // Reset après sauvegarde
     } catch (error) {
-      showToast("Erreur lors de l'enregistrement", "error");
+      console.error("Erreur complète:", error);
+      console.error("Response data:", error.response?.data);
+      
+      let errorMsg = "Erreur lors de l'enregistrement";
+      
+      // Gestion des erreurs Laravel
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.response?.data?.errors) {
+        const errors = Object.values(error.response.data.errors).flat();
+        errorMsg = errors.join(', ');
+      } else if (error.response?.data?.error) {
+        errorMsg = error.response.data.error;
+      }
+      
+      showToast(errorMsg, "error");
     }
   };
 
@@ -56,8 +78,9 @@ const GestionServices = () => {
       await api.delete(`/services/${serviceASupprimer.id}`);
       setSuppressionOuverte(false);
       await fetchServices();
-      showToast("Service supprimé !");
+      showToast("Service supprimé avec succès !");
     } catch (error) {
+      console.error("Erreur suppression:", error);
       showToast("Erreur lors de la suppression", "error");
     }
   };
@@ -69,7 +92,7 @@ const GestionServices = () => {
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
@@ -77,7 +100,10 @@ const GestionServices = () => {
           <p className="text-gray-500">Gérez les prestations de P.School affichées sur la vitrine</p>
         </div>
         <button 
-          onClick={() => { setServiceSelectionne(null); setModaleOuverte(true); }}
+          onClick={() => { 
+            setServiceSelectionne(null); 
+            setModaleOuverte(true); 
+          }}
           className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl shadow-sm transition-all active:scale-95"
         >
           <HiOutlinePlus className="w-5 h-5" />
@@ -89,7 +115,8 @@ const GestionServices = () => {
         <div className="flex-1 relative">
           <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input 
-            type="text" placeholder="Rechercher un service..."
+            type="text" 
+            placeholder="Rechercher un service..."
             className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             value={recherche}
             onChange={(e) => setRecherche(e.target.value)}
@@ -122,42 +149,58 @@ const GestionServices = () => {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {servicesFiltres.length > 0 ? servicesFiltres.map((s) => (
-                  <tr key={s.id} className="hover:bg-gray-50 transition">
-                    <td className="p-4">
-                      <div className="w-12 h-12 rounded-lg border bg-gray-100 overflow-hidden">
-                        {s.image ? (
-                          <img src={s.image} className="w-full h-full object-cover" alt={s.titre} />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-300">
-                             <HiOutlineSearch />
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="p-4 font-bold text-gray-800">{s.titre}</td>
-                    <td className="p-4 text-sm text-gray-500 max-w-xs truncate">{s.description}</td>
-                    <td className="p-4">
-                      <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                        s.statut === 'actif' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
-                      }`}>
-                        {s.statut}
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <div className="flex justify-center gap-2">
-                        <button onClick={() => { setServiceSelectionne(s); setModaleOuverte(true); }} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition">
-                          <HiOutlinePencil className="w-5 h-5" />
-                        </button>
-                        <button onClick={() => { setServiceASupprimer(s); setSuppressionOuverte(true); }} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition">
-                          <HiOutlineTrash className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )) : (
+                {servicesFiltres.length > 0 ? (
+                  servicesFiltres.map((s) => (
+                    <tr key={s.id} className="hover:bg-gray-50 transition">
+                      <td className="p-4">
+                        <div className="w-12 h-12 rounded-lg border bg-gray-100 overflow-hidden">
+                          {s.image ? (
+                            <img src={s.image} className="w-full h-full object-cover" alt={s.titre} />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300">
+                              <HiOutlineSearch />
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-4 font-bold text-gray-800">{s.titre}</td>
+                      <td className="p-4 text-sm text-gray-500 max-w-xs truncate">{s.description}</td>
+                      <td className="p-4">
+                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
+                          s.statut === 'actif' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
+                        }`}>
+                          {s.statut === 'actif' ? 'Actif' : 'Inactif'}
+                        </span>
+                      </td>
+                      <td className="p-4 text-center">
+                        <div className="flex justify-center gap-2">
+                          <button 
+                            onClick={() => { 
+                              setServiceSelectionne(s); 
+                              setModaleOuverte(true); 
+                            }} 
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                          >
+                            <HiOutlinePencil className="w-5 h-5" />
+                          </button>
+                          <button 
+                            onClick={() => { 
+                              setServiceASupprimer(s); 
+                              setSuppressionOuverte(true); 
+                            }} 
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                          >
+                            <HiOutlineTrash className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
                   <tr>
-                    <td colSpan="5" className="p-8 text-center text-gray-400">Aucun service trouvé</td>
+                    <td colSpan="5" className="p-8 text-center text-gray-400">
+                      Aucun service trouvé
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -168,7 +211,10 @@ const GestionServices = () => {
 
       <ModaleService 
         isOpen={modaleOuverte} 
-        onClose={() => setModaleOuverte(false)} 
+        onClose={() => {
+          setModaleOuverte(false);
+          setServiceSelectionne(null);
+        }} 
         onSave={handleSave} 
         serviceAModifier={serviceSelectionne}
       />

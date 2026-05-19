@@ -51,26 +51,27 @@ const ModaleFormation = ({ isOpen, onClose, onSave, formationAModifier, formateu
         setLoading(true);
 
         const data = new FormData();
-        // Sécurité : On n'ajoute que les valeurs non nulles
+        
+        // Ajouter toutes les données du formulaire
         Object.keys(formData).forEach(key => {
-            if (formData[key] !== null && formData[key] !== undefined) {
+            if (formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
                 data.append(key, formData[key]);
             }
         });
 
+        // Ajouter l'image si elle existe
         if (imageFile instanceof File) {
             data.append('image', imageFile);
         }
 
-        if (formationAModifier?.id) {
-            data.append('_method', 'PUT');
-        }
+        // Plus besoin d'ajouter _method ici, c'est géré par api.put()
 
         try {
             await onSave(data, !!formationAModifier);
-            // La fermeture est gérée par le parent après le succès
+            onClose(); // Fermer la modale après succès
         } catch (error) {
-            console.error("Erreur soumission modale");
+            console.error("Erreur soumission modale:", error);
+            // L'erreur est déjà gérée dans GestionFormations
         } finally {
             setLoading(false);
         }
@@ -96,9 +97,11 @@ const ModaleFormation = ({ isOpen, onClose, onSave, formationAModifier, formateu
                         <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
                             <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Visibilité</label>
                             <select 
+                                name="statut"
                                 value={formData.statut}
                                 onChange={(e) => setFormData({...formData, statut: e.target.value})}
                                 className="w-full text-xs font-bold bg-transparent outline-none cursor-pointer"
+                                required
                             >
                                 <option value="actif">Actif</option>
                                 <option value="inactif">Inactif</option>
@@ -108,6 +111,7 @@ const ModaleFormation = ({ isOpen, onClose, onSave, formationAModifier, formateu
                             <label className="block text-[10px] font-black uppercase text-gray-400 mb-1">Catégorie</label>
                             <input 
                                 type="text"
+                                name="categorie"
                                 list="categories-list"
                                 value={formData.categorie}
                                 onChange={(e) => setFormData({...formData, categorie: e.target.value})}
@@ -133,7 +137,14 @@ const ModaleFormation = ({ isOpen, onClose, onSave, formationAModifier, formateu
                             <p className="text-[10px] text-gray-500 font-bold uppercase">
                                 {imageFile ? "Image sélectionnée" : (formationAModifier ? "Changer l'image" : "Image de couverture *")}
                             </p>
-                            <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" required={!formationAModifier} />
+                            <input 
+                                type="file" 
+                                name="image"
+                                accept="image/*" 
+                                onChange={handleFileChange} 
+                                className="hidden" 
+                                required={!formationAModifier && !imageFile} 
+                            />
                         </label>
                     </div>
 
@@ -141,7 +152,10 @@ const ModaleFormation = ({ isOpen, onClose, onSave, formationAModifier, formateu
                     <div>
                         <label className="block text-xs font-bold text-gray-700 mb-1">Titre de la formation *</label>
                         <input 
-                            type="text" required value={formData.titre}
+                            type="text" 
+                            name="titre"
+                            required 
+                            value={formData.titre}
                             onChange={(e) => setFormData({...formData, titre: e.target.value})}
                             className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                         />
@@ -152,7 +166,10 @@ const ModaleFormation = ({ isOpen, onClose, onSave, formationAModifier, formateu
                         <div>
                             <label className="block text-xs font-bold text-gray-700 mb-1">Prix (FCFA)</label>
                             <input 
-                                type="number" required value={formData.prix}
+                                type="number" 
+                                name="prix"
+                                required 
+                                value={formData.prix}
                                 onChange={(e) => setFormData({...formData, prix: e.target.value})}
                                 className="w-full px-4 py-2 border rounded-lg outline-none"
                             />
@@ -160,7 +177,11 @@ const ModaleFormation = ({ isOpen, onClose, onSave, formationAModifier, formateu
                         <div>
                             <label className="block text-xs font-bold text-gray-700 mb-1">Durée</label>
                             <input 
-                                type="text" required value={formData.duree} placeholder="ex: 3 mois"
+                                type="text" 
+                                name="duree"
+                                required 
+                                value={formData.duree} 
+                                placeholder="ex: 3 mois"
                                 onChange={(e) => setFormData({...formData, duree: e.target.value})}
                                 className="w-full px-4 py-2 border rounded-lg outline-none"
                             />
@@ -172,9 +193,11 @@ const ModaleFormation = ({ isOpen, onClose, onSave, formationAModifier, formateu
                         <div>
                             <label className="block text-xs font-bold text-gray-700 mb-1">Public cible</label>
                             <select 
+                                name="public_cible"
                                 value={formData.public_cible}
                                 onChange={(e) => setFormData({...formData, public_cible: e.target.value})}
                                 className="w-full px-4 py-2 border rounded-lg outline-none bg-white"
+                                required
                             >
                                 <option value="Adulte">Adulte</option>
                                 <option value="Enfant">Enfant</option>
@@ -184,18 +207,41 @@ const ModaleFormation = ({ isOpen, onClose, onSave, formationAModifier, formateu
                         <div>
                             <label className="block text-xs font-bold text-gray-700 mb-1">Modules</label>
                             <input 
-                                type="number" required value={formData.nb_modules}
+                                type="number" 
+                                name="nb_modules"
+                                required 
+                                value={formData.nb_modules}
                                 onChange={(e) => setFormData({...formData, nb_modules: e.target.value})}
                                 className="w-full px-4 py-2 border rounded-lg outline-none"
                             />
                         </div>
                     </div>
 
+                    {/* Formateur (optionnel) */}
+                    {formateurs && formateurs.length > 0 && (
+                        <div>
+                            <label className="block text-xs font-bold text-gray-700 mb-1">Formateur (optionnel)</label>
+                            <select
+                                name="formateur_id"
+                                value={formData.formateur_id}
+                                onChange={(e) => setFormData({...formData, formateur_id: e.target.value})}
+                                className="w-full px-4 py-2 border rounded-lg outline-none bg-white"
+                            >
+                                <option value="">Sélectionner un formateur</option>
+                                {formateurs.map(f => (
+                                    <option key={f.id} value={f.id}>{f.nom} {f.prenom}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
                     {/* Description */}
                     <div>
                         <label className="block text-xs font-bold text-gray-700 mb-1">Description</label>
                         <textarea 
-                            required value={formData.description}
+                            name="description"
+                            required 
+                            value={formData.description}
                             onChange={(e) => setFormData({...formData, description: e.target.value})}
                             className="w-full px-4 py-2 border rounded-lg outline-none"
                             rows="2"
@@ -203,12 +249,19 @@ const ModaleFormation = ({ isOpen, onClose, onSave, formationAModifier, formateu
                     </div>
 
                     <div className="flex gap-3 pt-6 border-t">
-                        <button type="button" onClick={onClose} className="flex-1 py-3 border rounded-xl text-xs font-black uppercase">Annuler</button>
                         <button 
-                            type="submit" disabled={loading}
-                            className="flex-1 py-3 bg-green-600 text-white rounded-xl text-xs font-black uppercase shadow-lg disabled:opacity-50"
+                            type="button" 
+                            onClick={onClose} 
+                            className="flex-1 py-3 border rounded-xl text-xs font-black uppercase hover:bg-gray-50 transition"
                         >
-                            {loading ? 'Envoi...' : 'Enregistrer'}
+                            Annuler
+                        </button>
+                        <button 
+                            type="submit" 
+                            disabled={loading}
+                            className="flex-1 py-3 bg-green-600 text-white rounded-xl text-xs font-black uppercase shadow-lg disabled:opacity-50 hover:bg-green-700 transition"
+                        >
+                            {loading ? 'Envoi en cours...' : 'Enregistrer'}
                         </button>
                     </div>
                 </form>

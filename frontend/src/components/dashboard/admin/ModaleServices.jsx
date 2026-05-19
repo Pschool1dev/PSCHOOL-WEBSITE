@@ -3,7 +3,6 @@ import { HiOutlineX, HiOutlinePhotograph } from 'react-icons/hi';
 
 const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
     const [formData, setFormData] = useState({
-        id: '',
         titre: '',
         description: '',
         statut: 'actif'
@@ -11,19 +10,23 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
 
     const [imageFile, setImageFile] = useState(null);
     const [apercuImage, setApercuImage] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (serviceAModifier && isOpen) {
             setFormData({
-                id: serviceAModifier.id,
                 titre: serviceAModifier.titre || '',
                 description: serviceAModifier.description || '',
                 statut: serviceAModifier.statut || 'actif'
             });
-            setApercuImage(serviceAModifier.image);
+            setApercuImage(serviceAModifier.image || null);
             setImageFile(null);
         } else if (isOpen) {
-            setFormData({ id: '', titre: '', description: '', statut: 'actif' });
+            setFormData({ 
+                titre: '', 
+                description: '', 
+                statut: 'actif' 
+            });
             setApercuImage(null);
             setImageFile(null);
         }
@@ -46,18 +49,28 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         
         const data = new FormData();
         data.append('titre', formData.titre);
         data.append('description', formData.description);
         data.append('statut', formData.statut);
         
-        if (formData.id) data.append('id', formData.id);
-        if (imageFile) data.append('image', imageFile);
+        if (imageFile) {
+            data.append('image', imageFile);
+        }
 
-        onSave(data, !!serviceAModifier);
+        try {
+            await onSave(data, !!serviceAModifier);
+            onClose(); // Fermer la modale après succès
+        } catch (error) {
+            console.error("Erreur soumission modale:", error);
+            // L'erreur est déjà gérée dans GestionServices
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (!isOpen) return null;
@@ -69,14 +82,18 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
                     <h2 className="text-xl font-bold text-gray-800">
                         {serviceAModifier ? 'Modifier le service' : 'Ajouter un nouveau service'}
                     </h2>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition">
+                    <button 
+                        onClick={onClose} 
+                        className="p-2 hover:bg-gray-100 rounded-full transition"
+                        type="button"
+                    >
                         <HiOutlineX className="w-6 h-6 text-gray-500" />
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Image illustrative</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Image illustrative *</label>
                         <div className="flex items-center gap-4">
                             <div className="relative w-24 h-24 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center overflow-hidden bg-gray-50 shadow-inner">
                                 {apercuImage ? (
@@ -92,6 +109,7 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
                                     className="hidden" 
                                     accept="image/*"
                                     onChange={handleImageChange}
+                                    name="image"
                                 />
                                 <label 
                                     htmlFor="image-upload" 
@@ -99,15 +117,18 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
                                 >
                                     {apercuImage ? 'Changer l\'image' : 'Choisir une image'}
                                 </label>
-                                <p className="text-[10px] text-gray-400">JPG, PNG ou WebP. Max 2Mo.</p>
+                                <p className="text-[10px] text-gray-400">
+                                    {serviceAModifier ? "Laissez vide pour garder l'image actuelle" : "Image obligatoire *"}
+                                </p>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Nom du service</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Nom du service *</label>
                         <input 
                             type="text" 
+                            name="titre"
                             required
                             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
                             placeholder="ex: Conception d'Applications"
@@ -117,8 +138,9 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Description *</label>
                         <textarea 
+                            name="description"
                             required
                             rows="3"
                             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition resize-none"
@@ -131,9 +153,11 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-1">Statut</label>
                         <select 
+                            name="statut"
                             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition cursor-pointer"
                             value={formData.statut}
                             onChange={(e) => setFormData({...formData, statut: e.target.value})}
+                            required
                         >
                             <option value="actif">Actif (Visible sur le site)</option>
                             <option value="inactif">Inactif (Masqué)</option>
@@ -150,9 +174,10 @@ const ModaleService = ({ isOpen, onClose, onSave, serviceAModifier }) => {
                         </button>
                         <button 
                             type="submit"
-                            className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-md transition-all active:scale-95"
+                            disabled={loading}
+                            className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {serviceAModifier ? 'Mettre à jour' : 'Créer le service'}
+                            {loading ? 'Envoi...' : (serviceAModifier ? 'Mettre à jour' : 'Créer le service')}
                         </button>
                     </div>
                 </form>

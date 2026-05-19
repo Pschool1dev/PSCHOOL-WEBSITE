@@ -59,22 +59,35 @@ const GestionFormations = () => {
       const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 
       if (isEdit && formationSelectionnee) {
-        // Le _method: PUT est déjà ajouté dans la modale, donc on utilise POST
-        await api.post(`/formations/${formationSelectionnee.id}`, formData, config);
-        showToast("Formation mise à jour !");
+        // Utilisation de PUT pour la mise à jour
+        await api.put(`/formations/${formationSelectionnee.id}`, formData, config);
+        showToast("Formation mise à jour avec succès !");
       } else {
+        // Utilisation de POST pour la création
         await api.post('/formations', formData, config);
-        showToast("Formation créée !");
+        showToast("Formation créée avec succès !");
       }
       
       await fetchFormations();
       setModaleOuverte(false);
+      setFormationSelectionnee(null); // Reset après sauvegarde
     } catch (error) {
-      console.error("Détail erreur:", error.response?.data);
-      // On affiche l'erreur spécifique du validateur Laravel si elle existe
-      const backendMessage = error.response?.data?.message || error.response?.data?.errors;
-      const errorMsg = typeof backendMessage === 'object' ? "Erreur de validation des champs" : backendMessage;
-      showToast(errorMsg || "Erreur lors de l'enregistrement", "error");
+      console.error("Erreur complète:", error);
+      console.error("Response data:", error.response?.data);
+      
+      let errorMsg = "Erreur lors de l'enregistrement";
+      
+      // Gestion des erreurs Laravel
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.response?.data?.errors) {
+        const errors = Object.values(error.response.data.errors).flat();
+        errorMsg = errors.join(', ');
+      } else if (error.response?.data?.error) {
+        errorMsg = error.response.data.error;
+      }
+      
+      showToast(errorMsg, "error");
     }
   };
 
@@ -83,9 +96,9 @@ const GestionFormations = () => {
       await api.delete(`/formations/${formationASupprimer.id}`);
       setSuppressionOuverte(false);
       await fetchFormations();
-      showToast("Formation supprimée !");
+      showToast("Formation supprimée avec succès !");
     } catch (error) {
-      showToast("Erreur de suppression", "error");
+      showToast("Erreur lors de la suppression", "error");
     }
   };
 
@@ -174,8 +187,18 @@ const GestionFormations = () => {
                     </td>
                     <td className="p-4 text-center">
                       <div className="flex justify-center gap-1">
-                        <button onClick={() => { setFormationSelectionnee(f); setModaleOuverte(true); }} className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition"><HiOutlinePencil className="w-5 h-5" /></button>
-                        <button onClick={() => { setFormationASupprimer(f); setSuppressionOuverte(true); }} className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition"><HiOutlineTrash className="w-5 h-5" /></button>
+                        <button 
+                          onClick={() => { setFormationSelectionnee(f); setModaleOuverte(true); }} 
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition"
+                        >
+                          <HiOutlinePencil className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={() => { setFormationASupprimer(f); setSuppressionOuverte(true); }} 
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition"
+                        >
+                          <HiOutlineTrash className="w-5 h-5" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -188,7 +211,10 @@ const GestionFormations = () => {
 
       <ModaleFormation 
         isOpen={modaleOuverte} 
-        onClose={() => setModaleOuverte(false)} 
+        onClose={() => {
+          setModaleOuverte(false);
+          setFormationSelectionnee(null);
+        }} 
         onSave={handleSave} 
         formationAModifier={formationSelectionnee}
         formateurs={formateurs}
