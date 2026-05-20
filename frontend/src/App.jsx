@@ -14,6 +14,7 @@ import FormateurDashboard from './pages/dashboard/FormateurDashboard';
 import ParentDashboard from './pages/dashboard/ParentDashboard';
 import SuiviEnfant from './components/dashboard/parent/SuiviEnfant';
 import CoursePlayer from './pages/CoursePlayer';
+import ElearningPage from './pages/ElearningPage';
 
 import InscriptionFormation from './pages/InscriptionFormation';
 
@@ -25,6 +26,7 @@ const PublicLayout = () => {
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Accueil />} />
+          <Route path="/elearning" element={<ElearningPage />} />
         </Routes>
       </main>
       <Footer />

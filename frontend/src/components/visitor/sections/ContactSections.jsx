@@ -49,7 +49,7 @@ const ContactSection = () => {
           <h2 className="text-3xl font-bold text-gray-800 mt-2">
             Parlons de votre projet
           </h2>
-          <div className="w-16 h-0.5 bg-green-600 mx-auto mt-4"></div>
+    
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">

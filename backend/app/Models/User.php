@@ -32,6 +32,7 @@ class User extends Authenticatable
         'niveau_etude',
         'formations_interet', 
         'localite',
+        'statut'
     ];
 
     /**

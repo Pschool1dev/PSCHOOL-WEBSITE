@@ -6,16 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+   public function up()
 {
     Schema::create('contacts', function (Blueprint $table) {
         $table->id();
         $table->string('nom');
         $table->string('email');
-        $table->string('telephone');
+        $table->string('telephone')->nullable();
         $table->string('sujet');
         $table->text('message');
-        $table->boolean('lu')->default(false);
+        $table->boolean('lu')->default(false); // On utilise un boolean pour savoir si le message est lu
         $table->timestamps();
     });
 }

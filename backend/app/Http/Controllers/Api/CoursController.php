@@ -160,7 +160,7 @@ public function getContenuPourApprenant($formationId)
             
             // AJOUTS POUR LE PAYWALL REQUIS PAR LE COMPOSANT REACT :
             'statut_paiement' => $inscription->statut_paiement ?? 'essai', // Valeur par défaut si nul
-            'formation_prix' => $inscription->montant ?? 150000          // Prix enregistré lors de l'inscription
+            'formation_prix' => $inscription->montant_paye ?? 150000          // Prix enregistré lors de l'inscription
         ]);
 
     } catch (\Exception $e) {

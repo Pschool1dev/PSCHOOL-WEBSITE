@@ -6,22 +6,31 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
-    {
-        Schema::create('inscriptions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('formation_id')->constrained()->onDelete('cascade');
-            $table->date('date_inscription');
-            $table->enum('statut', ['en_attente', 'confirmee', 'annulee', 'terminee'])->default('en_attente');
-            $table->decimal('montant_paye', 10, 2)->nullable();
-            $table->string('mode_paiement')->nullable();
-            $table->timestamps();
-            
-            // Empêcher les doublons
-            $table->unique(['user_id', 'formation_id']);
-        });
-    }
+   public function up()
+{
+    Schema::create('inscriptions', function (Blueprint $table) {
+        $table->id();
+        
+        // Liens vers l'utilisateur et la formation
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->foreignId('formation_id')->constrained()->onDelete('cascade');
+        
+        $table->date('date_inscription');
+        
+        // Statut de l'inscription (en_attente, active, terminee, annulee)
+        $table->string('statut')->default('active');
+        
+        // Informations financières
+        $table->decimal('montant_paye', 10, 2)->default(0);
+        $table->string('mode_paiement')->nullable(); // Orange Money, Moov Money, Espèces
+        $table->string('payment_status')->default('pending'); // pending, completed, failed
+        
+        // Suivi pédagogique (si besoin)
+        $table->integer('progression')->default(0); // Pourcentage de complétion (0 à 100)
+        
+        $table->timestamps();
+    });
+}
 
     public function down()
     {

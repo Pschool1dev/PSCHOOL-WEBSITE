@@ -40,7 +40,7 @@ class ContactController extends Controller
             }
 
             // Récupère les messages (les non-lus en premier)
-            $messages = Contact::orderBy('lu', 'asc')
+          $messages = Contact::orderBy('est_lu', 'asc')
                                ->orderBy('created_at', 'desc')
                                ->get();
 
@@ -58,7 +58,7 @@ class ContactController extends Controller
             }
 
             $message = Contact::findOrFail($id);
-            $message->lu = !$message->lu; 
+            $message->est_lu = !$message->est_lu;
             $message->save();
 
             return response()->json([

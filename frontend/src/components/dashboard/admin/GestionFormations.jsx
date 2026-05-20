@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { HiOutlineSearch, HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineBookOpen, HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
-import ModaleFormation from './ModaleFormation'; 
+import ModaleFormation from './ModaleFormation';
 import ConfirmationSuppression from './ConfirmationSuppression';
 import Toast from '../../../components/Toast';
 import api from '../../../services/api';
-
 const GestionFormations = () => {
   const [recherche, setRecherche] = useState('');
   const [filtrePublic, setFiltrePublic] = useState('tous');
@@ -18,26 +17,36 @@ const GestionFormations = () => {
   const [categoriesListe, setCategoriesListe] = useState([]);
   const [toast, setToast] = useState(null);
 
-  const showToast = (message, type = 'success') => setToast({ message, type });
-  const hideToast = () => setToast(null);
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+  };
+
+  const hideToast = () => {
+    setToast(null);
+  };
 
   const fetchFormations = async () => {
     try {
       setChargement(true);
-      const response = await api.get('/formations');
-      setFormations(response.data || response); 
+      const data = await api.get('/formations');
+      setFormations(data);
     } catch (error) {
-      showToast("Erreur lors du chargement des formations", "error");
-    } finally {
+    // Affiche l'erreur détaillée provenant de l'API
+    const message = error.response?.data?.errors 
+        ? JSON.stringify(error.response.data.errors) 
+        : error.message;
+    showToast("Erreur: " + message, "error");
+} finally {
       setChargement(false);
     }
   };
 
   const fetchFormateurs = async () => {
     try {
-      const response = await api.get('/formateurs');
-      setFormateurs(response.data || response);
+      const data = await api.get('/formateurs');
+      setFormateurs(data);
     } catch (error) {
+      console.error("Erreur chargement formateurs:", error);
       setFormateurs([]);
     }
   };
@@ -56,38 +65,21 @@ const GestionFormations = () => {
 
   const handleSave = async (formData, isEdit) => {
     try {
-      const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-
       if (isEdit && formationSelectionnee) {
-        // Utilisation de PUT pour la mise à jour
-        await api.put(`/formations/${formationSelectionnee.id}`, formData, config);
-        showToast("Formation mise à jour avec succès !");
+        const id = formationSelectionnee.id; 
+        formData.append('_method', 'PUT'); 
+        await api.post(`/formations/${id}`, formData);
+        showToast("Formation modifiée avec succès !");
       } else {
-        // Utilisation de POST pour la création
-        await api.post('/formations', formData, config);
+        await api.post('/formations', formData);
         showToast("Formation créée avec succès !");
       }
       
       await fetchFormations();
       setModaleOuverte(false);
-      setFormationSelectionnee(null); // Reset après sauvegarde
     } catch (error) {
-      console.error("Erreur complète:", error);
-      console.error("Response data:", error.response?.data);
-      
-      let errorMsg = "Erreur lors de l'enregistrement";
-      
-      // Gestion des erreurs Laravel
-      if (error.response?.data?.message) {
-        errorMsg = error.response.data.message;
-      } else if (error.response?.data?.errors) {
-        const errors = Object.values(error.response.data.errors).flat();
-        errorMsg = errors.join(', ');
-      } else if (error.response?.data?.error) {
-        errorMsg = error.response.data.error;
-      }
-      
-      showToast(errorMsg, "error");
+      console.error("Erreur save:", error);
+      showToast("Une erreur est survenue lors de l'enregistrement", "error");
     }
   };
 
@@ -113,12 +105,12 @@ const GestionFormations = () => {
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Gestion des Formations</h1>
-          <p className="text-gray-500 text-sm">Pilotez le catalogue de P.School</p>
+          <h1 className="text-2xl font-bold text-gray-800 tracking-tight font-heading">Gestion des Formations</h1>
+          <p className="text-gray-500 text-sm">Contrôlez la visibilité et les détails de vos programmes P.School</p>
         </div>
         <button 
           onClick={() => { setFormationSelectionnee(null); setModaleOuverte(true); }}
-          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl shadow-sm transition-all font-bold"
+          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 font-bold"
         >
           <HiOutlinePlus className="w-5 h-5" />
           Ajouter une formation
@@ -131,7 +123,7 @@ const GestionFormations = () => {
           <input 
             type="text" 
             placeholder="Rechercher par titre..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg outline-none"
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             value={recherche}
             onChange={(e) => setRecherche(e.target.value)}
           />
@@ -149,13 +141,14 @@ const GestionFormations = () => {
 
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         {chargement ? (
-          <div className="p-12 text-center text-gray-400 italic">Chargement...</div>
+          <div className="p-12 text-center text-gray-400 italic animate-pulse">Chargement du catalogue...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead className="bg-gray-50 border-b text-gray-600 text-[10px] font-black uppercase tracking-widest">
                 <tr>
                   <th className="p-4">Formation</th>
+                  <th className="p-4">Mode</th>
                   <th className="p-4">Catégorie</th>
                   <th className="p-4 text-center">Modules</th>
                   <th className="p-4">Prix</th>
@@ -168,6 +161,7 @@ const GestionFormations = () => {
                   <tr key={f.id} className="hover:bg-gray-50/50 transition-colors group">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
+                        {/* Image nettoyée sans point de couleur */}
                         <img src={f.image} className="w-12 h-12 object-cover rounded-lg border shadow-sm" alt="" />
                         <div>
                           <div className="font-bold text-gray-800 line-clamp-1">{f.titre}</div>
@@ -176,26 +170,45 @@ const GestionFormations = () => {
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className="text-[10px] font-black text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md uppercase">{f.categorie}</span>
+                      <span className="text-[10px] font-black text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md uppercase tracking-tight">{f.categorie}</span>
                     </td>
-                    <td className="p-4 text-center text-sm font-black text-gray-700">{f.nb_modules}</td>
-                    <td className="p-4 font-black text-green-600 text-sm">{f.prix?.toLocaleString()} <span className="text-[9px]">FCFA</span></td>
+                    <td className="p-4">
+                    <span className="text-[10px] font-black text-slate-600 bg-slate-100 px-2 py-1 rounded-md uppercase">
+                      {f.mode_formation === 'session' ? 'Session Programmée' : 'E-learning'}
+                    </span>
+                  </td>
+                    <td className="p-4 text-center text-sm font-black text-gray-700">
+                        {f.nb_modules}
+                    </td>
+                    <td className="p-4 font-black text-green-600 text-sm whitespace-nowrap">
+                        {f.prix?.toLocaleString()} <span className="text-[9px]">FCFA</span>
+                    </td>
+                    
                     <td className="p-4 text-center">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${f.statut === 'actif' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
-                        {f.statut === 'actif' ? "Actif" : "Inactif"}
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
+                        f.statut === 'actif' ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        {f.statut === 'actif' ? (
+                          <> <HiOutlineEye className="w-3.5 h-3.5" /> Actif </>
+                        ) : (
+                          <> <HiOutlineEyeOff className="w-3.5 h-3.5" /> Inactif </>
+                        )}
                       </span>
                     </td>
+
                     <td className="p-4 text-center">
                       <div className="flex justify-center gap-1">
                         <button 
-                          onClick={() => { setFormationSelectionnee(f); setModaleOuverte(true); }} 
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition"
+                          onClick={() => { setFormationSelectionnee(f); setModaleOuverte(true); }}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition duration-200"
+                          title="Modifier"
                         >
                           <HiOutlinePencil className="w-5 h-5" />
                         </button>
                         <button 
-                          onClick={() => { setFormationASupprimer(f); setSuppressionOuverte(true); }} 
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition"
+                          onClick={() => { setFormationASupprimer(f); setSuppressionOuverte(true); }}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition duration-200"
+                          title="Supprimer"
                         >
                           <HiOutlineTrash className="w-5 h-5" />
                         </button>
@@ -205,16 +218,20 @@ const GestionFormations = () => {
                 ))}
               </tbody>
             </table>
+            
+            {formationsFiltrees.length === 0 && (
+              <div className="p-20 text-center text-gray-400">
+                <HiOutlineBookOpen className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                <p className="font-medium text-sm">Aucun programme trouvé.</p>
+              </div>
+            )}
           </div>
         )}
       </div>
 
       <ModaleFormation 
         isOpen={modaleOuverte} 
-        onClose={() => {
-          setModaleOuverte(false);
-          setFormationSelectionnee(null);
-        }} 
+        onClose={() => setModaleOuverte(false)} 
         onSave={handleSave} 
         formationAModifier={formationSelectionnee}
         formateurs={formateurs}

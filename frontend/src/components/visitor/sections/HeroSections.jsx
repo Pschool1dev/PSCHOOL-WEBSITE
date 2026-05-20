@@ -1,76 +1,145 @@
-const HeroSection = () => {
-  return (
-    <section id="hero" className="relative h-[80vh] flex items-center justify-start text-left pt-20">
-      <div 
-        className="absolute inset-0 bg-cover bg-center z-0" 
-        style={{ backgroundImage: "url('/assets/hero-bg.jpg')" }}
-      >
-        <div 
-          className="absolute inset-0 z-0"
-          style={{
-            background: 'linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.85) 40%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)'
-          }}
-        ></div>
-      </div>
+import { useEffect, useRef } from 'react';
+import { HiOutlineArrowNarrowRight, HiOutlinePlay } from 'react-icons/hi';
 
-      <div className="relative z-10 px-8 md:px-16 max-w-2xl">
+const HeroSection = () => {
+  const statsRef = useRef([]);
+
+  useEffect(() => {
+    // Animation des compteurs
+    const animateValue = (element, start, end, duration) => {
+      const step = (end - start) / (duration / 16);
+      let current = start;
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= end) {
+          current = end;
+          clearInterval(timer);
+        }
+        if (element) element.textContent = Math.floor(current) + (element.dataset.suffix || '');
+      }, 16);
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const value = entry.target.dataset.value;
+          const suffix = entry.target.dataset.suffix;
+          animateValue(entry.target, 0, parseInt(value), 1500);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    statsRef.current.forEach(stat => {
+      if (stat) observer.observe(stat);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section id="hero" className="relative min-h-screen flex items-center justify-start overflow-hidden">
+      {/* Background avec parallax */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-fixed transform scale-105" 
+        style={{ backgroundImage: "url('/assets/hero-bg.jpg')" }}
+      />
+      
+      {/* Overlay gradient dynamique */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
+      
+      {/* Effet de particules (cercles flous) */}
+      <div className="absolute top-20 right-10 w-72 h-72 bg-green-500/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-20 left-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+
+      <div className="relative z-10 px-6 md:px-20 max-w-4xl">
+        {/* Badge flottant */}
+        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6 animate-bounce">
+          <span className="w-2 h-2 bg-green-500 rounded-full animate-ping" />
+          <span className="text-xs font-medium text-green-500 uppercase tracking-wider">Formation Innovante</span>
+        </div>
         
-        {/* Titre */}
-        <h2 className="text-3xl md:text-4xl font-black text-green-500 uppercase leading-tight animate-fade-up">
-          " Devenir Programmeur En un clin d'œil "
+        {/* Titre avec animation */}
+        <h2 className="text-5xl md:text-7xl font-black leading-tight animate-fade-up">
+          <span className="text-green-500">
+            "Devenir Programmeur
+          </span>
+          <br />
+          <span className="text-white">En un clin d'œil"</span>
         </h2>
         
-        {/* Paragraphes avec police Inter */}
-        <div className="mt-4 space-y-1">
-          <p className="text-white text-base md:text-lg font-normal">
+        {/* Description */}
+        <div className="mt-6 space-y-2 animate-fade-up animation-delay-200">
+          <p className="text-xl md:text-2xl text-gray-200 font-light">
             Maîtriser l'avenir du numérique au Burkina Faso
           </p>
-          <p className="text-white text-base md:text-lg font-normal">
-            Apprenez le Code, la Robotique et le Numérique avec Programming School.
+          <p className="text-lg text-gray-300">
+            Apprenez le Code, la Robotique et le Numérique avec <span className='text-green-500'>Programming School</span>
           </p>
         </div>
         
-        {/* Boutons (plus petits) */}
-        <div className="flex flex-col sm:flex-row gap-3 mt-6">
+        {/* Boutons avec effets */}
+        <div className="flex flex-col sm:flex-row gap-4 mt-10 animate-fade-up animation-delay-400">
           <button 
-            onClick={() => {
+         onClick={() => {
               const section = document.getElementById('formations');
               if (section) section.scrollIntoView({ behavior: 'smooth' });
             }}
             className="px-5 py-2 bg-green-500 text-white text-sm font-semibold rounded-lg hover:bg-green-600 transition"
           >
-            Découvrir nos offres de formations
+            <span className="relative z-10 flex items-center gap-2">
+              Découvrir nos offres de formations
+              <HiOutlineArrowNarrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </span>
+           
           </button>
           
           <button 
             onClick={() => {
               const section = document.getElementById('services');
-              if (section) section.scrollIntoView({ behavior: 'smooth' });
+              if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }}
-            className="px-5 py-2 border-2 border-white text-white text-sm font-semibold rounded-lg hover:bg-white hover:text-green-600 transition"
+            className="group px-8 py-4 border-2 border-white/30 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white hover:text-green-600 transition-all duration-300 hover:border-transparent hover:shadow-xl"
           >
-            Nos Prestations de services
+            <span className="flex items-center gap-2">
+              <HiOutlinePlay className="w-5 h-5" />
+              Nos Prestations de services
+            </span>
           </button>
         </div>
         
-        {/* Statistiques (plus petites) */}
-        <div className="flex gap-6 mt-8">
-          <div>
-            <div className="text-2xl font-bold text-orange-500">2000+</div>
-            <div className="text-xs text-gray-300">Apprenants formés depuis 2021</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-orange-500">50+</div>
-            <div className="text-xs text-gray-300">Formations</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-orange-500">90%+</div>
-            <div className="text-xs text-gray-300">Satisfaction</div>
-          </div>
+        {/* Statistiques avec animation */}
+        <div className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-white/10 animate-fade-up animation-delay-600">
+          {[
+            { value: "2000", suffix: "+", label: "Apprenants formés", sub: "depuis 2021" },
+            { value: "50", suffix: "+", label: "Formations", sub: "disponibles" },
+            { value: "90", suffix: "%+", label: "Taux de satisfaction", sub: "recommandé" }
+          ].map((stat, idx) => (
+            <div key={idx} className="text-center group cursor-pointer">
+              <div className="relative">
+                <div 
+                  ref={el => statsRef.current[idx] = el}
+                  data-value={stat.value}
+                  data-suffix={stat.suffix}
+                  className="text-4xl md:text-5xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent"
+                >
+                  0{stat.suffix}
+                </div>
+                <div className="absolute -bottom-2 left-1/2 w-0 h-0.5 bg-gradient-to-r from-green-500 to-transparent group-hover:w-1/2 transition-all duration-500 -translate-x-1/2" />
+              </div>
+              <div className="text-sm font-semibold text-gray-300 mt-3">{stat.label}</div>
+              <div className="text-xs text-gray-400">{stat.sub}</div>
+            </div>
+          ))}
         </div>
-        
       </div>
       
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+          <div className="w-1 h-2 bg-green-500 rounded-full mt-2 animate-pulse" />
+        </div>
+      </div>
     </section>
   );
 };

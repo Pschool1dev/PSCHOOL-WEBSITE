@@ -16,6 +16,7 @@ class Formation extends Model
     'prix',
     'statut',
     'categorie',
+    'mode_formation',
     'public_cible', 
     'image',
     'public_id'

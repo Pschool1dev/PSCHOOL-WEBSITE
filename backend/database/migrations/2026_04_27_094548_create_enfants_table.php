@@ -9,27 +9,33 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
+public function up()
 {
     Schema::create('enfants', function (Blueprint $table) {
         $table->id();
-        // La clé étrangère qui lie l'enfant au compte du parent
-        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        // Clé étrangère vers le parent (table users)
+        $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
         
+        // Informations personnelles
         $table->string('nom');
         $table->string('prenom');
-        $table->integer('age');
-        $table->string('niveau_etude');
-        $table->string('nom_ecole');
-        $table->string('localite_ecole');
-     
-        $table->json('formations_interet')->nullable(); 
+        $table->integer('age')->nullable();
         
-        // Statut de l'inscription (en cours, terminé, etc.)
-        $table->string('statut')->default('En cours'); 
+        // Connexion (Authentification de l'enfant)
+        $table->string('username')->unique();
+        $table->string('password');
+        $table->string('access_token', 64)->nullable()->unique();
+        
+        // Scolarité
+        $table->string('niveau_etude')->nullable();
+        $table->string('nom_ecole')->nullable();
+        $table->string('localite_ecole')->nullable();
+        
+        // Préférences et État
+        $table->json('formations_interet')->nullable(); // Utilise JSON pour le cast 'array'
+        $table->boolean('is_active')->default(true);
         
         $table->timestamps();
-
     });
 }
 

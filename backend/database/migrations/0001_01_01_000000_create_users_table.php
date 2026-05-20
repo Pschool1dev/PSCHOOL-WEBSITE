@@ -17,6 +17,13 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            
+            // Ajoute tes champs personnalisés ici :
+            $table->string('role')->default('user'); 
+            $table->string('type')->default('parent');
+            $table->string('telephone')->nullable();
+            $table->foreignId('parent_id')->nullable()->constrained('users')->onDelete('cascade');
+            
             $table->rememberToken();
             $table->timestamps();
         });

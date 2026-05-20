@@ -6,17 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up()
+   public function up()
 {
     Schema::create('services', function (Blueprint $table) {
         $table->id();
+        
+        // Identifiant pour Cloudinary/Stockage
+        $table->string('public_id')->nullable();
+        
         $table->string('titre');
         $table->text('description');
         $table->string('image')->nullable();
-        $table->enum('statut', ['actif', 'inactif'])->default('actif');
+        
+        // Statut du service (ex: actif, maintenance, bientôt)
+        $table->string('statut')->default('actif');
+        
         $table->timestamps();
     });
 }

@@ -59,7 +59,7 @@ class AuthController extends Controller
         });
     }
 
-  public function login(Request $request)
+public function login(Request $request)
 {
     $validator = Validator::make($request->all(), [
         'email' => 'required|string', 
@@ -70,19 +70,20 @@ class AuthController extends Controller
         return response()->json(['errors' => $validator->errors()], 422);
     }
 
-   
-    $user = User::where('email', $request->email)
-                ->orWhere('username', $request->email)
-                ->first();
+    // CORRECTION : Suppression du 'orWhere('username', ...)'
+    // On cherche uniquement par email pour les utilisateurs de la table 'users'
+    $user = User::where('email', $request->email)->first();
 
     if (!$user || !Hash::check($request->password, $user->password)) {
-        return response()->json(['message' => 'email ou username ou mot de passe incorrect'], 401);
+        return response()->json(['message' => 'Email ou mot de passe incorrect'], 401);
     }
+    
     if ($user->statut === 'inactif') {
         return response()->json([
-            'message' => 'Votre compte est actuellement inactif ou suspendu. Veuillez contacter l\'administration de P.School.'
+            'message' => 'Votre compte est inactif.'
         ], 403);
     }
+
     $token = $user->createToken('auth_token')->plainTextToken;
 
     return response()->json([

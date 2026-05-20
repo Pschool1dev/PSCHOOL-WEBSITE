@@ -6,15 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-   public function up()
+public function up()
 {
     Schema::create('notifications', function (Blueprint $table) {
         $table->id();
-        $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
+        
+        // Liaison avec l'utilisateur qui reçoit la notification
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        
         $table->string('titre');
         $table->text('message');
+        
+        // Type de notification (ex: info, succès, alerte, paiement)
+        $table->string('type')->default('info');
+        
+        // État de lecture
         $table->boolean('est_lu')->default(false);
-        $table->string('type')->default('message'); 
+        
         $table->timestamps();
     });
 }

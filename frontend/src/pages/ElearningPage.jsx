@@ -4,7 +4,7 @@ import {
   HiX 
 } from 'react-icons/hi';
 import { FaUserPlus, FaBookOpen, FaCreditCard, FaAward } from 'react-icons/fa';
-import api from '../../../services/api'; 
+import api from '../services/api'; 
 import { useNavigate } from 'react-router-dom';
 
 const steps = [
@@ -14,7 +14,7 @@ const steps = [
   { num: "04", title: "Obtenez votre certificat", desc: "Complétez tous les modules et recevez votre certification", icon: <FaAward /> },
 ];
 
-const FormationsSection = () => {
+const ElearningPage = () => {
   const navigate = useNavigate();
   const [formations, setFormations] = useState([]);
   const [chargement, setChargement] = useState(true);
@@ -22,10 +22,13 @@ const FormationsSection = () => {
   const [formationSelectionnee, setFormationSelectionnee] = useState(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+    
     const getFormations = async () => {
       try {
-        const data = await api.get('/formations?mode=vitrine');
-        setFormations(data);
+        // Appel API conforme à notre backend local
+        const data = await api.get('/formations?mode=vitrine&mode_formation=elearning');
+        setFormations(data || []);
       } catch (error) {
         console.error("Erreur chargement formations:", error);
       } finally {
@@ -35,38 +38,29 @@ const FormationsSection = () => {
     getFormations();
   }, []);
 
-  // Fonction pour traiter l'URL de l'image de façon sécurisée
   const getImageUrl = (imagePath) => {
     if (!imagePath) return 'https://via.placeholder.com/400x300?text=P.School';
-    
-    // Si c'est déjà une URL Cloudinary ou externe (https), on la laisse telle quelle
-    if (imagePath.startsWith('https://res.cloudinary.com')) return imagePath;
-
-    // Si c'est une ancienne URL locale ou HTTP, on la force en HTTPS pour Render
-    return imagePath
-      .replace('http://127.0.0.1:8000', 'https://pschool-backend.onrender.com')
-      .replace('http://pschool-backend.onrender.com', 'https://pschool-backend.onrender.com');
+    // Si c'est déjà une URL complète (Cloudinary), on retourne tel quel
+    if (imagePath.startsWith('http')) return imagePath;
+    // Sinon, on construit l'URL locale
+    return `http://127.0.0.1:8000/storage/${imagePath.replace('storage/', '')}`;
   };
 
   const categories = ['Tous', ...new Set(formations.map(f => f.categorie).filter(Boolean))];
-  
   const filteredFormations = filtre === 'Tous' 
     ? formations 
     : formations.filter(f => f.categorie === filtre);
 
   return (
-    <section id="formations" className="py-16 bg-white">
+    <section className="pt-24 pb-16 bg-white min-h-screen">
       <div className="max-w-6xl mx-auto px-5">
         
         <div className="mb-12 text-center">
-          <span className="text-green-600 font-semibold text-sm uppercase tracking-wide">Nos formations</span>
+          <span className="text-green-600 font-semibold text-sm uppercase tracking-wide">E-learning</span>
           <h2 className="text-3xl font-bold text-gray-800 mt-2">
-            Développez vos compétences
+            Cours en ligne & Certifications
           </h2>
           <div className="w-16 h-0.5 bg-green-600 mx-auto mt-4"></div>
-          <p className="text-gray-600 max-w-2xl mx-auto mt-4">
-            Des programmes conçus pour répondre aux exigences réelles du marché technologique.
-          </p>
         </div>
         
         <div className="flex flex-wrap justify-center gap-2 mb-10">
@@ -103,23 +97,15 @@ const FormationsSection = () => {
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
                     alt={formation.titre}
                   />
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-green-300 text-gray-800 text-xs font-medium px-2 py-1 rounded-md">
-                      {formation.public_cible}
-                    </span>
-                  </div>
                 </div>
 
                 <div className="p-4">
                   <span className="text-green-600 text-xs font-semibold uppercase tracking-wide">
-                    {formation.categorie}
+                    {formation.categorie || 'Général'}
                   </span>
                   <h3 className="text-lg font-bold text-gray-800 mt-1 mb-2 line-clamp-1">
                     {formation.titre}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                    {formation.description}
-                  </p>
                   
                   <div className="flex items-center gap-4 mb-4 text-xs text-gray-500">
                     <div className="flex items-center gap-1">
@@ -128,16 +114,16 @@ const FormationsSection = () => {
                     </div>
                     <div className="flex items-center gap-1">
                       <HiOutlineClock className="w-3.5 h-3.5" /> 
-                      <span>{formation.duree}</span>
+                      <span>{formation.duree || 'N/A'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                     <button 
                       onClick={() => setFormationSelectionnee(formation)}
-                      className="text-green-600 text-sm font-medium hover:text-green-700 transition-colors"
+                      className="text-green-600 text-sm font-medium hover:text-green-700"
                     >
-                      Voir détails
+                      Détails
                     </button>
                     <button 
                       onClick={() => navigate(`/inscription/${formation.id}`)} 
@@ -152,7 +138,7 @@ const FormationsSection = () => {
           </div>
         )}
 
-        {/* Section Fonctionnement */}
+        {/* Section Comment ça fonctionne */}
         <div className="mt-16 pt-8 border-t border-gray-200">
           <h3 className="text-2xl font-bold text-gray-800 text-center mb-10">Comment ça fonctionne ?</h3>
           <div className="grid md:grid-cols-4 gap-6">
@@ -172,7 +158,7 @@ const FormationsSection = () => {
 
       {/* Modal Détails */}
       {formationSelectionnee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative p-6">
             <button 
               onClick={() => setFormationSelectionnee(null)}
@@ -190,7 +176,7 @@ const FormationsSection = () => {
                 <div className="bg-gray-50 px-4 py-3 rounded-md border border-gray-200">
                    <p className="text-xs text-gray-500 uppercase mb-1">Frais de formation</p>
                    <div className="text-2xl font-bold text-gray-800">
-                     {Number(formationSelectionnee.prix).toLocaleString()} <span className="text-sm text-green-600">FCFA</span>
+                     {Number(formationSelectionnee.prix || 0).toLocaleString()} <span className="text-sm text-green-600">FCFA</span>
                    </div>
                 </div>
               </div>
@@ -211,4 +197,4 @@ const FormationsSection = () => {
   );
 };
 
-export default FormationsSection;
+export default ElearningPage;
