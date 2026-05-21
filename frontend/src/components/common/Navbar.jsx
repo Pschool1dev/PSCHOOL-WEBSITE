@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { HiMenu, HiX, HiChevronDown } from 'react-icons/hi';
-
+import { useAuth } from '../../contexts/AuthContext'; 
 
 const Navbar = () => {
 
@@ -92,11 +92,29 @@ const Navbar = () => {
         <div className="flex flex-col items-center space-y-4 font-semibold text-xl px-8 overflow-y-auto">
           <Link to="/" onClick={() => setIsOpen(false)} className="w-full py-2 border-b">Accueil</Link>
           <Link to="/a-propos" onClick={() => setIsOpen(false)} className="w-full py-2 border-b">À propos</Link>
-          <Link to="/elearning" onClick={() => setIsOpen(false)} className="w-full py-2 border-b text-green-600 italic">E-learning</Link>
+          <Link to="/services" onClick={() => setIsOpen(false)} className="w-full py-2 border-b">Nos Services</Link>
+          <Link to="/elearning" onClick={() => setIsOpen(false)} className="w-full py-2 ">E-learning</Link>
           <button onClick={() => handleScrollTo('formations-programmees')} className="w-full py-2 border-b text-left">Sessions Programmées</button>
           <button onClick={() => handleScrollTo('evenements')} className="w-full py-2 border-b text-left">Évènements</button>
           <button onClick={() => handleScrollTo('temoignages')} className="w-full py-2 border-b text-left">Témoignages</button>
           <button onClick={() => handleScrollTo('contact')} className="w-full py-2 border-b text-left">Contact</button>
+          <div className="w-full h-px bg-gray-200 my-4"></div>
+          
+          {/* BOUTONS CONNEXION ET INSCRIPTION POUR MOBILE */}
+          <Link 
+            to="/login" 
+            onClick={() => setIsOpen(false)} 
+            className="w-full py-3 text-center border border-gray-300 rounded-xl text-gray-700 font-bold hover:bg-gray-50 transition"
+          >
+            Se connecter
+          </Link>
+          <Link 
+            to="/register" 
+            onClick={() => setIsOpen(false)} 
+            className="w-full py-3 text-center bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition"
+          >
+            S'inscrire
+          </Link>
         </div>
       </div>
     </nav>
