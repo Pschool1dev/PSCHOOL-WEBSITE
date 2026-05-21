@@ -22,7 +22,6 @@ const ServicesSection = () => {
     const fetchServices = async () => {
       try {
         const data = await api.get('/services');
-        // On s'assure de filtrer les services actifs
         setServices(Array.isArray(data) ? data.filter(s => s.statut === 'actif') : []);
       } catch (err) {
         console.error("Erreur chargement services:", err);
@@ -35,45 +34,43 @@ const ServicesSection = () => {
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return 'https://via.placeholder.com/400x300?text=Service+P.School';
-    // Si c'est déjà une URL complète (ex: Cloudinary), on la retourne
     if (imagePath.startsWith('http')) return imagePath;
-    // Sinon, on pointe vers le stockage local
     return `http://127.0.0.1:8000/storage/${imagePath.replace('storage/', '')}`;
   };
 
   const getColorClass = (color) => {
-    const colors = { blue: 'bg-blue-600', green: 'bg-green-600', orange: 'bg-orange-600', purple: 'bg-purple-600' };
-    return colors[color] || 'bg-gray-600';
+    const colors = { blue: 'bg-blue-500', green: 'bg-green-500', orange: 'bg-orange-500', purple: 'bg-purple-500' };
+    return colors[color] || 'bg-gray-500';
   };
 
   const scrollToContact = () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <section id="services" className="py-16 bg-gray-50">
+    <section id="services" className="py-16 bg-white">
       <div className="max-w-6xl mx-auto px-5">
         <div className="text-center mb-12">
-          <span className="text-green-600 font-semibold text-sm uppercase tracking-wide">Nos prestations</span>
-          <h2 className="text-3xl font-bold text-gray-700 mt-2">Services professionnels</h2>
-      
+          <span className="text-green-500 font-semibold text-sm uppercase tracking-wide">Nos prestations</span>
+          <h2 className="text-3xl font-bold text-gray-900 mt-2">Services professionnels</h2>
+          <div className="w-16 h-0.5 bg-green-500 mx-auto mt-4 rounded-full"></div>
         </div>
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <div className="w-10 h-10 border-3 border-gray-200 border-t-green-600 rounded-full animate-spin"></div>
+            <div className="w-10 h-10 border-3 border-gray-200 border-t-green-500 rounded-full animate-spin"></div>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((service) => (
-              <div key={service.id} className="group bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                <div className="relative h-40 w-full overflow-hidden bg-gray-100">
-                  <img src={getImageUrl(service.image)} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt={service.titre} />
-                  <div className={`absolute top-3 left-3 w-8 h-0.5 ${getColorClass(service.color)}`}></div>
+              <div key={service.id} className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                <div className="relative h-44 w-full overflow-hidden bg-gray-100">
+                  <img src={getImageUrl(service.image)} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={service.titre} />
+                  <div className={`absolute top-0 left-0 w-1 h-full ${getColorClass(service.color)}`}></div>
                 </div>
                 <div className="p-5">
-                  <div className="text-green-600 mb-3">{getServiceIcon(service.titre)}</div>
-                  <h3 className="text-lg font-bold text-gray-800 mb-2">{service.titre}</h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">{service.description}</p>
-                  <button onClick={() => setServiceSelectionne(service)} className="text-green-600 text-sm font-medium inline-flex items-center gap-1">
+                  <div className="text-green-500 mb-3">{getServiceIcon(service.titre)}</div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{service.titre}</h3>
+                  <p className="text-gray-500 text-sm mb-4 line-clamp-3">{service.description}</p>
+                  <button onClick={() => setServiceSelectionne(service)} className="text-green-500 text-sm font-medium inline-flex items-center gap-1 hover:gap-2 transition-all">
                     En savoir plus <FaArrowRight className="text-xs" />
                   </button>
                 </div>
@@ -82,39 +79,120 @@ const ServicesSection = () => {
           </div>
         )}
 
-        {/* Modal Service */}
+        {/* Modal Service - AGRANDIE */}
         {serviceSelectionne && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative p-6">
-              <button onClick={() => setServiceSelectionne(null)} className="absolute top-4 right-4 p-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200">
-                <HiX className="w-5 h-5" />
-              </button>
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="w-full md:w-2/5 h-48 rounded-md overflow-hidden bg-gray-100">
-                  <img src={getImageUrl(serviceSelectionne.image)} className="w-full h-full object-cover" alt={serviceSelectionne.titre} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden relative animate-fade-in-up">
+              
+              {/* Header avec bouton fermeture */}
+              <div className="flex justify-between items-center p-6 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    {getServiceIcon(serviceSelectionne.titre)}
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900">{serviceSelectionne.titre}</h2>
                 </div>
-                <div className="w-full md:w-3/5">
-                  <h2 className="text-xl font-bold text-gray-800 mb-3">{serviceSelectionne.titre}</h2>
-                  <p className="text-gray-600 text-sm leading-relaxed">{serviceSelectionne.description}</p>
-                </div>
-              </div>
-              <div className="mt-8 pt-6 border-t border-gray-200 grid sm:grid-cols-2 gap-3">
-                <a 
-                  href={`https://wa.me/22607571645?text=${encodeURIComponent(serviceSelectionne.whatsapp_message || 'Bonjour, je souhaite échanger sur : ' + serviceSelectionne.titre)}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="flex items-center justify-center gap-2 py-3 bg-green-600 text-white rounded-md font-medium"
+                <button 
+                  onClick={() => setServiceSelectionne(null)} 
+                  className="p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors"
                 >
-                  <FaWhatsapp className="text-lg" /> WhatsApp
-                </a>
-                <button onClick={() => { setServiceSelectionne(null); scrollToContact(); }} className="flex items-center justify-center gap-2 py-3 bg-gray-700 text-white rounded-md font-medium">
-                  <FaEnvelope className="text-base" /> Formulaire
+                  <HiX className="w-5 h-5" />
                 </button>
               </div>
+              
+              {/* Contenu principal */}
+              <div className="p-6 overflow-y-auto max-h-[60vh]">
+                <div className="flex flex-col md:flex-row gap-8">
+                  {/* Image agrandie */}
+                  <div className="w-full md:w-2/5">
+                    <div className="sticky top-0 rounded-xl overflow-hidden bg-gray-100 shadow-md">
+                      <img 
+                        src={getImageUrl(serviceSelectionne.image)} 
+                        className="w-full h-auto object-cover" 
+                        alt={serviceSelectionne.titre} 
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Description détaillée */}
+                  <div className="w-full md:w-3/5">
+                    <div className="prose prose-sm max-w-none">
+                      <p className="text-gray-600 text-base leading-relaxed">
+                        {serviceSelectionne.description}
+                      </p>
+                    </div>
+                    
+                    {/* Informations supplémentaires */}
+                    <div className="mt-6 p-4 bg-gray-50 rounded-xl">
+                      <h4 className="font-semibold text-gray-900 mb-2">Pourquoi choisir ce service ?</h4>
+                      <ul className="space-y-2 text-sm text-gray-600">
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                          Expertise reconnue au Burkina Faso
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                          Équipe de professionnels certifiés
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                          Support et accompagnement personnalisé
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Footer avec boutons d'action */}
+              <div className="p-6 border-t border-gray-100 bg-gray-50">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <a 
+                    href={`https://wa.me/22607571645?text=${encodeURIComponent(serviceSelectionne.whatsapp_message || 'Bonjour, je souhaite échanger sur : ' + serviceSelectionne.titre)}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center justify-center gap-2 py-3 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600 transition-colors"
+                  >
+                    <FaWhatsapp className="text-lg" /> 
+                    <span>Contacter via WhatsApp</span>
+                  </a>
+                  <button 
+                    onClick={() => { 
+                      setServiceSelectionne(null); 
+                      scrollToContact(); 
+                    }} 
+                    className="flex items-center justify-center gap-2 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors"
+                  >
+                    <FaEnvelope className="text-base" /> 
+                    <span>Demander un devis</span>
+                  </button>
+                </div>
+                <p className="text-center text-xs text-gray-400 mt-4">
+                  Réponse sous 24h garantie
+                </p>
+              </div>
+              
             </div>
           </div>
         )}
       </div>
+      
+      {/* Animation CSS pour la modale */}
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in-up {
+          animation: fadeInUp 0.3s ease-out;
+        }
+      `}</style>
     </section>
   );
 };

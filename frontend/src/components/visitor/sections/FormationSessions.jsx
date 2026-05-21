@@ -8,6 +8,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 // Import required modules
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
+import { HiArrowNarrowRight, HiOutlineAcademicCap } from 'react-icons/hi';
 
 const FormationSessions = () => {
   const [sessions, setSessions] = useState([]);
@@ -42,7 +43,8 @@ const FormationSessions = () => {
         
         <div className="text-center mb-12">
           <span  className="text-green-500 font-semibold text-sm uppercase tracking-wide">Prochaines Sessions</span>
-          <p  className="text-2xl font-bold text-gray-900 mt-2">Réservez votre place pour nos formations intensives à <span className='text-gray-900'>Ouagadougou, Bobo Dioulasso et en ligne</span></p>
+          <p  className="text-2xl font-bold text-gray-800 mt-2">Réservez votre place pour nos formations intensives en présentiel  </p>
+          <p className="text-2xl font-bold text-gray-800 mt-2" >Posibilité de suivre en ligne </p>
         
         </div>
 
@@ -92,6 +94,22 @@ const FormationSessions = () => {
             <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Aucune session programmée</p>
           </div>
         )}
+
+        {/* BOUTON AJOUTÉ EN BAS */}
+        <div className="text-center mt-12 pt-8 border-t border-gray-200">
+          <button 
+            onClick={() => window.location.href = '/elearning'}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors"
+          >
+       
+            <span>Découvrir nos formations E-learning</span>
+            <HiArrowNarrowRight className="w-4 h-4" />
+          </button>
+          <p className="text-gray-400 text-xs mt-3">
+            Apprenez à votre rythme, où que vous soyez
+          </p>
+        </div>
+
       </div>
     </section>
   );

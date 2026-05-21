@@ -55,8 +55,8 @@ const HeroSection = () => {
       <div className="relative z-10 px-6 md:px-20 max-w-4xl">
         {/* Badge flottant */}
         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6 animate-bounce">
-          <span className="w-2 h-2 bg-green-500 rounded-full animate-ping" />
-          <span className="text-xs font-medium text-green-500 uppercase tracking-wider">Formation Innovante</span>
+          <span className="w-2 h-2 bg-withe rounded-full animate-ping" />
+          <span className="text-xs font-medium text-white uppercase tracking-wider">Formation Innovante</span>
         </div>
         
         {/* Titre avec animation */}
@@ -74,7 +74,7 @@ const HeroSection = () => {
             Maîtriser l'avenir du numérique au Burkina Faso
           </p>
           <p className="text-lg text-gray-300">
-            Apprenez le Code, la Robotique et le Numérique avec <span className='text-green-500'>Programming School</span>
+            Apprenez le Code, la Robotique et le Numérique avec <span className='text-green-500'>PSchool</span>
           </p>
         </div>
         
@@ -82,13 +82,13 @@ const HeroSection = () => {
         <div className="flex flex-col sm:flex-row gap-4 mt-10 animate-fade-up animation-delay-400">
           <button 
          onClick={() => {
-              const section = document.getElementById('formations');
+              const section = document.getElementById('formations-programmees');
               if (section) section.scrollIntoView({ behavior: 'smooth' });
             }}
             className="px-5 py-2 bg-green-500 text-white text-sm font-semibold rounded-lg hover:bg-green-600 transition"
           >
             <span className="relative z-10 flex items-center gap-2">
-              Découvrir nos offres de formations
+              Découvrir nos offres de formations intensives
               <HiOutlineArrowNarrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </span>
            
@@ -121,11 +121,11 @@ const HeroSection = () => {
                   ref={el => statsRef.current[idx] = el}
                   data-value={stat.value}
                   data-suffix={stat.suffix}
-                  className="text-4xl md:text-5xl font-black bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent"
+                  className="text-4xl md:text-5xl font-black bg-gradient-to-r from-orange-500 to-orange-500 bg-clip-text text-transparent"
                 >
                   0{stat.suffix}
                 </div>
-                <div className="absolute -bottom-2 left-1/2 w-0 h-0.5 bg-gradient-to-r from-green-500 to-transparent group-hover:w-1/2 transition-all duration-500 -translate-x-1/2" />
+                <div className="absolute -bottom-2 left-1/2 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-transparent group-hover:w-1/2 transition-all duration-500 -translate-x-1/2" />
               </div>
               <div className="text-sm font-semibold text-gray-300 mt-3">{stat.label}</div>
               <div className="text-xs text-gray-400">{stat.sub}</div>
