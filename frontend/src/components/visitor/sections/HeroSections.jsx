@@ -55,7 +55,7 @@ const HeroSection = () => {
       <div className="relative z-10 px-6 md:px-20 max-w-4xl">
         {/* Badge flottant */}
         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6 animate-bounce">
-          <span className="w-2 h-2 bg-withe rounded-full animate-ping" />
+          <span className="w-2 h-2 bg-orange-500 rounded-full animate-ping" />
           <span className="text-xs font-medium text-white uppercase tracking-wider">Formation Innovante</span>
         </div>
         
