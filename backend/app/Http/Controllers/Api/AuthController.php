@@ -80,7 +80,7 @@ public function login(Request $request)
     
     if ($user->statut === 'inactif') {
         return response()->json([
-            'message' => 'Votre compte est inactif.'
+            'message' => 'Votre compte  banni .Laisser nous un message pour en savoir plus'
         ], 403);
     }
 

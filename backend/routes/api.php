@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\FormationController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\InscriptionController;
+use App\Http\Controllers\Api\InscriptionSessionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\EnfantController;
@@ -77,4 +78,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/messages', [ContactController::class, 'index']);
     Route::put('/admin/messages/{id}/toggle-lu', [ContactController::class, 'toggleLu']);
 
+     Route::post('/inscriptions-sessions', [App\Http\Controllers\Api\InscriptionSessionController::class, 'store']);
+    Route::get('/mes-inscriptions-sessions', [App\Http\Controllers\Api\InscriptionSessionController::class, 'mesInscriptionsSessions']);
 });
