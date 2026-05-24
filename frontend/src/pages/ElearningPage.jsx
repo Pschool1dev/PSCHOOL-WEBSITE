@@ -26,7 +26,6 @@ const ElearningPage = () => {
     
     const getFormations = async () => {
       try {
-        // Appel API conforme à notre backend local
         const data = await api.get('/formations?mode=vitrine&mode_formation=elearning');
         setFormations(data || []);
       } catch (error) {
@@ -40,9 +39,7 @@ const ElearningPage = () => {
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return 'https://via.placeholder.com/400x300?text=P.School';
-    // Si c'est déjà une URL complète (Cloudinary), on retourne tel quel
     if (imagePath.startsWith('http')) return imagePath;
-    // Sinon, on construit l'URL locale
     return `http://127.0.0.1:8000/storage/${imagePath.replace('storage/', '')}`;
   };
 
@@ -55,14 +52,24 @@ const ElearningPage = () => {
     <section className="pt-24 pb-16 bg-white min-h-screen">
       <div className="max-w-6xl mx-auto px-5">
         
-        <div className="mb-12 text-center">
-          <span className="text-green-600 font-semibold text-sm uppercase tracking-wide">E-learning</span>
-          <h2 className="text-3xl font-bold text-gray-800 mt-2">
+        {/* En-tête avec titre sur toute la largeur */}
+        <div className=" pt-24 mb-12">
+          <div className="relative flex items-center justify-center">
+           
+            <span className="inline-flex items-center gap-2 px-6 py-2 mx-4 rounded-full text-cyan-600 font-semibold text-4xl uppercase tracking-wide ">
+              <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
+              E-learning
+           
+            </span>
+        
+          </div>
+          <h2 className="text-3xl font-bold text-gray-800 text-center mt-6">
             Cours en ligne & Certifications
           </h2>
-          <div className="w-16 h-0.5 bg-green-600 mx-auto mt-4"></div>
+        
         </div>
         
+        {/* Filtres */}
         <div className="flex flex-wrap justify-center gap-2 mb-10">
           {categories.map(cat => (
             <button
@@ -70,7 +77,7 @@ const ElearningPage = () => {
               onClick={() => setFiltre(cat)}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 filtre === cat 
-                ? 'bg-green-600 text-white' 
+                ? 'bg-cyan-600 text-white' 
                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
               }`}
             >
@@ -81,7 +88,7 @@ const ElearningPage = () => {
 
         {chargement ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <div className="w-10 h-10 border-3 border-gray-200 border-t-green-600 rounded-full animate-spin"></div>
+            <div className="w-10 h-10 border-3 border-gray-200 border-t-cyan-600 rounded-full animate-spin"></div>
             <p className="text-gray-500">Chargement du catalogue...</p>
           </div>
         ) : (
@@ -100,7 +107,7 @@ const ElearningPage = () => {
                 </div>
 
                 <div className="p-4">
-                  <span className="text-green-600 text-xs font-semibold uppercase tracking-wide">
+                  <span className="text-cyan-600 text-xs font-semibold uppercase tracking-wide">
                     {formation.categorie || 'Général'}
                   </span>
                   <h3 className="text-lg font-bold text-gray-800 mt-1 mb-2 line-clamp-1">
@@ -121,13 +128,13 @@ const ElearningPage = () => {
                   <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                     <button 
                       onClick={() => setFormationSelectionnee(formation)}
-                      className="text-green-600 text-sm font-medium hover:text-green-700"
+                      className="text-cyan-600 text-sm font-medium hover:text-cyan-700"
                     >
                       Détails
                     </button>
                     <button 
                       onClick={() => navigate(`/inscription/${formation.id}`)} 
-                      className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-800 text-white hover:bg-green-600 transition-colors"
+                      className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-800 text-white hover:bg-cyan-600 transition-colors"
                     >
                       <HiArrowRight className="w-4 h-4" />
                     </button>
@@ -144,8 +151,8 @@ const ElearningPage = () => {
           <div className="grid md:grid-cols-4 gap-6">
             {steps.map((step, index) => (
               <div key={index} className="text-center">
-                <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-green-600 text-xl">{step.icon}</span>
+                <div className="w-14 h-14 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-cyan-600 text-xl">{step.icon}</span>
                 </div>
                 <div className="text-2xl font-bold text-gray-300 mb-1">{step.num}</div>
                 <h4 className="font-semibold text-gray-800 mb-1">{step.title}</h4>
@@ -176,7 +183,7 @@ const ElearningPage = () => {
                 <div className="bg-gray-50 px-4 py-3 rounded-md border border-gray-200">
                    <p className="text-xs text-gray-500 uppercase mb-1">Frais de formation</p>
                    <div className="text-2xl font-bold text-gray-800">
-                     {Number(formationSelectionnee.prix || 0).toLocaleString()} <span className="text-sm text-green-600">FCFA</span>
+                     {Number(formationSelectionnee.prix || 0).toLocaleString()} <span className="text-sm text-cyan-600">FCFA</span>
                    </div>
                 </div>
               </div>
@@ -185,7 +192,7 @@ const ElearningPage = () => {
               <p className="text-gray-600 text-sm leading-relaxed">{formationSelectionnee.description}</p>
               <button 
                 onClick={() => navigate(`/inscription/${formationSelectionnee.id}`)} 
-                className="w-full py-3 bg-green-600 text-white rounded-md font-medium hover:bg-green-700"
+                className="w-full py-3 bg-cyan-600 text-white rounded-md font-medium hover:bg-cyan-700"
               >
                 S'inscrire maintenant
               </button>

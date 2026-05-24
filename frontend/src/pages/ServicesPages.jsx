@@ -39,7 +39,7 @@ const ServicesPage = () => {
   };
 
   const getColorClass = (color) => {
-    const colors = { blue: 'bg-blue-500', green: 'bg-green-500', orange: 'bg-orange-500', purple: 'bg-purple-500' };
+    const colors = { blue: 'bg-blue-500', green: 'bg-cyan-500', orange: 'bg-orange-500', purple: 'bg-purple-500' };
     return colors[color] || 'bg-gray-500';
   };
 
@@ -48,15 +48,25 @@ const ServicesPage = () => {
   return (
     <section id="services" className="py-16 pt-32 pb-16 bg-white">
       <div className="max-w-6xl mx-auto px-5">
-        <div className="text-center mb-12">
-          <span className="text-green-500 font-semibold text-sm uppercase tracking-wide">Nos prestations</span>
-          <h2 className="text-3xl font-bold text-gray-900 mt-2">Services professionnels</h2>
-          <div className="w-16 h-0.5 bg-green-500 mx-auto mt-4 rounded-full"></div>
+        
+        {/* En-tête avec titre sur toute la largeur */}
+        <div className="mb-12">
+          <div className="relative flex items-center justify-center">
+            
+            <span className="inline-flex items-center gap-2 px-6 py-2 mx-4  rounded-full text-cyan-600 font-semibold text-4xl uppercase tracking-wide bg-white shadow-sm">
+        
+              Nos prestations
+           
+            </span>
+            
+          </div>
+          <h2 className="text-3xl font-bold text-gray-500 text-center mt-6">Services professionnels</h2>
+      
         </div>
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <div className="w-10 h-10 border-3 border-gray-200 border-t-green-500 rounded-full animate-spin"></div>
+            <div className="w-10 h-10 border-3 border-gray-200 border-t-cyan-500 rounded-full animate-spin"></div>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -67,10 +77,10 @@ const ServicesPage = () => {
                   <div className={`absolute top-0 left-0 w-1 h-full ${getColorClass(service.color)}`}></div>
                 </div>
                 <div className="p-5">
-                  <div className="text-green-500 mb-3">{getServiceIcon(service.titre)}</div>
+                  <div className="text-cyan-600 mb-3">{getServiceIcon(service.titre)}</div>
                   <h3 className="text-lg font-bold text-gray-900 mb-2">{service.titre}</h3>
                   <p className="text-gray-500 text-sm mb-4 line-clamp-3">{service.description}</p>
-                  <button onClick={() => setServiceSelectionne(service)} className="text-green-500 text-sm font-medium inline-flex items-center gap-1 hover:gap-2 transition-all">
+                  <button onClick={() => setServiceSelectionne(service)} className="text-cyan-600 text-sm font-medium inline-flex items-center gap-1 hover:gap-2 transition-all">
                     En savoir plus <FaArrowRight className="text-xs" />
                   </button>
                 </div>
@@ -87,7 +97,7 @@ const ServicesPage = () => {
               {/* Header avec bouton fermeture */}
               <div className="flex justify-between items-center p-6 border-b border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center">
                     {getServiceIcon(serviceSelectionne.titre)}
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900">{serviceSelectionne.titre}</h2>
@@ -127,15 +137,15 @@ const ServicesPage = () => {
                       <h4 className="font-semibold text-gray-900 mb-2">Pourquoi choisir ce service ?</h4>
                       <ul className="space-y-2 text-sm text-gray-600">
                         <li className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                          <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
                           Expertise reconnue au Burkina Faso
                         </li>
                         <li className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                          <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
                           Équipe de professionnels certifiés
                         </li>
                         <li className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                          <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
                           Support et accompagnement personnalisé
                         </li>
                       </ul>
@@ -161,7 +171,7 @@ const ServicesPage = () => {
                       setServiceSelectionne(null); 
                       scrollToContact(); 
                     }} 
-                    className="flex items-center justify-center gap-2 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors"
+                    className="flex items-center justify-center gap-2 py-3 bg-cyan-600 text-white rounded-xl font-semibold hover:bg-cyan-700 transition-colors"
                   >
                     <FaEnvelope className="text-base" /> 
                     <span>Demander un devis</span>
@@ -176,8 +186,6 @@ const ServicesPage = () => {
           </div>
         )}
       </div>
-      
-   
     </section>
   );
 };

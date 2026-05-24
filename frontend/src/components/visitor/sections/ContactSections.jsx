@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { HiOutlineMail, HiOutlinePhone, HiOutlineLocationMarker, HiOutlineClock, HiOutlineChat, HiOutlineArrowNarrowRight } from 'react-icons/hi';
 import { FaWhatsapp } from 'react-icons/fa';
 import api from '../../../services/api'; 
@@ -15,6 +15,25 @@ const ContactSection = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  const floatingImageRef = useRef(null);
+
+  useEffect(() => {
+    // Animation de l'image qui monte et descend
+    if (floatingImageRef.current) {
+      let direction = 1;
+      let position = 0;
+      const interval = setInterval(() => {
+        position += direction * 0.5;
+        if (position >= 20) direction = -1;
+        if (position <= -20) direction = 1;
+        if (floatingImageRef.current) {
+          floatingImageRef.current.style.transform = `translateY(${position}px)`;
+        }
+      }, 50);
+      return () => clearInterval(interval);
+    }
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -42,30 +61,38 @@ const ContactSection = () => {
     <section id="contact" className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-5">
         
-        {/* En-tête percutant */}
+        {/* En-tête */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-green-50 rounded-full px-4 py-1.5 mb-4">
-            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-green-600 font-semibold text-sm uppercase tracking-wide">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4">
+         
+            <span className="text-orange-600 font-semibold text-4xl uppercase tracking-wide">
               Contactez-nous
             </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-2">
-            Parlons de votre projet
-          </h2>
-          <p className="text-gray-500 text-lg mt-4 max-w-2xl mx-auto">
-            Une question ? Un projet ? Écrivez-nous, nous vous répondrons dans les meilleurs délais.
-          </p>
-          <div className="w-20 h-0.5 bg-green-500 mx-auto mt-6 rounded-full" />
+        
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-10">
+        {/* Image à gauche + Formulaire à droite - Même hauteur */}
+        <div className="grid lg:grid-cols-2 gap-10 mb-10 items-stretch">
           
-          {/* FORMULAIRE - Design épuré */}
-          <div className="bg-gray-50 rounded-2xl p-8 shadow-sm border border-gray-100">
+          {/* IMAGE À GAUCHE - Pleine largeur */}
+          <div 
+            ref={floatingImageRef}
+            className="hidden lg:block transition-all duration-100 ease-in-out  overflow-hidden  "
+            style={{ transition: 'transform 0.1s linear' }}
+          >
+            <img 
+              src="/assets/Contactez-Nous-removebg-preview.png" 
+              alt="Contact illustration"
+              className="w-full h-full object-cover min-h-[500px]"
+            />
+          </div>
+          
+          {/* FORMULAIRE À DROITE */}
+          <div className="bg-gray-50 rounded-2xl p-8 border border-gray-200 flex flex-col">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-              <HiOutlineChat className="w-6 h-6 text-green-500" />
-              <h3 className="text-xl font-bold text-gray-900">Envoyez-nous un message</h3>
+              <HiOutlineChat className="w-6 h-6 text-orange-500" />
+              <h3 className="text-xl font-bold text-gray-800">Envoyez-nous un message</h3>
             </div>
             
             {submitted && (
@@ -80,7 +107,7 @@ const ContactSection = () => {
               </div>
             )}
             
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5 flex-1">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Nom complet <span className='text-red-500'>*</span></label>
@@ -90,7 +117,7 @@ const ContactSection = () => {
                     required
                     value={formData.nom}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
                     placeholder="Votre nom et prénom"
                   />
                 </div>
@@ -102,7 +129,7 @@ const ContactSection = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
                     placeholder="votre@email.com"
                   />
                 </div>
@@ -116,7 +143,7 @@ const ContactSection = () => {
                   required
                   value={formData.telephone}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
                   placeholder="Ex : +226 XX XX XX XX"
                 />
               </div>
@@ -129,20 +156,20 @@ const ContactSection = () => {
                   required
                   value={formData.sujet}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
                   placeholder="Comment pouvons-nous vous aider ?"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Message <span className='text-red-500'>*</span></label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Message <span className='text-orange-500'>*</span></label>
                 <textarea
                   name="message"
                   rows="4"
                   required
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all resize-none"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all resize-none"
                   placeholder="Décrivez votre besoin ici..."
                 ></textarea>
               </div>
@@ -150,7 +177,7 @@ const ContactSection = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group w-full py-3.5 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="group w-full py-3.5 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   'Envoi en cours...'
@@ -163,27 +190,30 @@ const ContactSection = () => {
               </button>
             </form>
           </div>
+        </div>
 
-          {/* INFOS + MAPS - Design percutant */}
+        {/* INFOS + MAPS - EN BAS */}
+        <div className="grid lg:grid-cols-2 gap-6 mt-6">
+          
+          {/* Cartes d'info et horaires */}
           <div className="space-y-6">
-            {/* Cartes d'info */}
             <div className="grid sm:grid-cols-2 gap-5">
-              <div className="group p-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-200 transition-all">
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-green-500 transition-colors">
-                  <HiOutlinePhone className="w-6 h-6 text-green-500 group-hover:text-white transition-colors" />
+              <div className="group p-6 bg-gray-50 rounded-2xl border border-gray-200 hover:shadow-md hover:border-orange-200 transition-all">
+                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-orange-500 transition-colors">
+                  <HiOutlinePhone className="w-6 h-6 text-orange-500 group-hover:text-white transition-colors" />
                 </div>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Téléphone / WhatsApp</p>
                 <p className="text-base font-semibold text-gray-800">+226 02 88 05 82</p>
                 <p className="text-base font-semibold text-gray-800">+226 07 57 16 45</p>
                 <div className="mt-3 flex items-center gap-2">
-                  <FaWhatsapp className="w-4 h-4 text-green-500" />
+                  <FaWhatsapp className="w-4 h-4 text-orange-500" />
                   <span className="text-xs text-gray-400">Réponse sous 24h</span>
                 </div>
               </div>
               
-              <div className="group p-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-green-200 transition-all">
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-green-500 transition-colors">
-                  <HiOutlineMail className="w-6 h-6 text-green-500 group-hover:text-white transition-colors" />
+              <div className="group p-6 bg-gray-50 rounded-2xl border border-gray-200 hover:shadow-md hover:border-orange-200 transition-all">
+                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-orange-500 transition-colors">
+                  <HiOutlineMail className="w-6 h-6 text-orange-500 group-hover:text-white transition-colors" />
                 </div>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email</p>
                 <p className="text-base font-semibold text-gray-800">infos@pschool.pro</p>
@@ -191,44 +221,41 @@ const ContactSection = () => {
               </div>
             </div>
 
-            {/* Horaires */}
-            <div className="flex items-center gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-100">
-              <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-                <HiOutlineClock className="w-5 h-5 text-green-500" />
+            <div className="flex items-center gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-200">
+              <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
+                <HiOutlineClock className="w-5 h-5 text-orange-500" />
               </div>
               <div>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Horaires d'ouverture</p>
                 <p className="text-sm text-gray-700">Lundi - Samedi : 9h00 - 17h00</p>
-           
-              </div>
-            </div>
-
-            {/* Carte Maps */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all">
-              <div className="flex items-start gap-3 p-5 border-b border-gray-100">
-                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-                  <HiOutlineLocationMarker className="w-5 h-5 text-green-500" />
-                </div>
-                <div>
-                  <p className="font-bold text-gray-800">Secteur 53, Ouaga 2000</p>
-                  <p className="text-sm text-gray-500 mt-0.5">Boulevard Muammar Khadafi, Ouagadougou, Burkina Faso</p>
-                </div>
-              </div>
-              
-              <div className="h-64 w-full">
-                <iframe 
-                  title="P.School Location"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3897.894746110535!2d-1.5022534251700728!3d12.322870787936061!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xe2ebd0c8acc045b%3A0x43f81f1a9af2130e!2sPROGRAMMING%20SCHOOL%20OUAGADOUGOU!5e0!3m2!1sfr!2sbf!4v1777542341593!5m2!1sfr!2sbf" 
-                  className="w-full h-full"
-                  style={{ border: 0 }} 
-                  allowFullScreen="" 
-                  loading="lazy" 
-                  referrerPolicy="no-referrer-when-downgrade"
-                ></iframe>
               </div>
             </div>
           </div>
 
+          {/* Carte Maps */}
+          <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden hover:shadow-md transition-all">
+            <div className="flex items-start gap-3 p-5 border-b border-gray-200">
+              <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
+                <HiOutlineLocationMarker className="w-5 h-5 text-orange-500" />
+              </div>
+              <div>
+                <p className="font-bold text-gray-800">Secteur 53, Ouaga 2000</p>
+                <p className="text-sm text-gray-500 mt-0.5">Boulevard Muammar Khadafi, Ouagadougou, Burkina Faso</p>
+              </div>
+            </div>
+            
+            <div className="h-64 w-full">
+              <iframe 
+                title="P.School Location"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3897.894746110535!2d-1.5022534251700728!3d12.322870787936061!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xe2ebd0c8acc045b%3A0x43f81f1a9af2130e!2sPROGRAMMING%20SCHOOL%20OUAGADOUGOU!5e0!3m2!1sfr!2sbf!4v1777542341593!5m2!1sfr!2sbf" 
+                className="w-full h-full"
+                style={{ border: 0 }} 
+                allowFullScreen="" 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -40,9 +40,9 @@ const FormationSessionsPage = () => {
     <section id="formations-programmees" className="py-20 pt-32 pb-16 bg-white scroll-mt-10">
       <div className="max-w-6xl mx-auto px-5">
         
-        <div className="text-center mb-12">
+        <div className="text-center pt-24 mb-12">
           <span className="text-green-500 font-semibold text-sm uppercase tracking-wide">Prochaines Sessions</span>
-          <p className="text-2xl font-bold text-gray-800 mt-2">Réservez votre place pour nos formations intensives en présentiel</p>
+          <p className="text-2xl pt-8 font-bold text-gray-800 mt-2">Réservez votre place pour nos formations intensives en présentiel</p>
           <p className="text-2xl font-bold text-gray-800 mt-2">Possibilité de suivre en ligne</p>
         </div>
 

@@ -40,21 +40,19 @@ const temoignages = [
 
 const TemoignagesSections = () => {
   return (
-    <section id="temoignages" className="py-24 bg-gray-50">
+    <section id="temoignages" className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-5">
         
-        {/* En-tête de section */}
+        {/* En-tête de section avec badge arrondi */}
         <div className="text-center mb-16">
-          <span className="text-green-600 font-semibold text-sm uppercase tracking-wide">
-            Témoignages
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mt-2">
-            Ce que disent nos apprenants
-          </h2>
-          <p className="text-gray-500 text-lg mt-4 max-w-2xl mx-auto">
-            Plus de 2000 apprenants nous font confiance pour leur formation
-          </p>
-          <div className="w-20 h-0.5 bg-green-500 mx-auto mt-6 rounded-full" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4">
+           
+            <span className="text-orange-600 font-semibold text-4xl uppercase tracking-wide">
+             Témoignages
+            </span>
+          </div>
+         
+         
         </div>
 
         {/* Swiper pour les témoignages */}
@@ -96,14 +94,14 @@ const TemoignagesSections = () => {
 
                   {/* Informations de l'auteur */}
                   <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
                       {t.avatar}
                     </div>
                     <div>
                       <div className="font-bold text-gray-800 text-base">
                         {t.name}
                       </div>
-                      <div className="text-green-600 text-xs font-medium">
+                      <div className="text-orange-500 text-xs font-medium">
                         {t.role}
                       </div>
                     </div>
@@ -118,26 +116,26 @@ const TemoignagesSections = () => {
         <div className="mt-20 pt-8 border-t border-gray-200">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div className="group cursor-pointer">
-              <div className="text-3xl md:text-4xl font-bold text-green-600 mb-2">
+              <div className="text-3xl md:text-4xl font-bold text-orange-600 mb-2">
                 98%
               </div>
-              <div className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">taux de satisfaction</div>
+              <div className="text-sm text-gray-500 group-hover:text-orange-700 transition-colors">taux de satisfaction</div>
             </div>
             <div className="group cursor-pointer">
-              <div className="text-3xl md:text-4xl font-bold text-green-600 mb-2">
+              <div className="text-3xl md:text-4xl font-bold text-orange-600 mb-2">
                 2000+
               </div>
               <div className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">apprenants formés</div>
             </div>
             <div className="group cursor-pointer">
-              <div className="text-3xl md:text-4xl font-bold text-green-600 mb-2">
+              <div className="text-3xl md:text-4xl font-bold text-orange-600 mb-2">
                 85%
               </div>
               <div className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">d'insertion professionnelle</div>
             </div>
             <div className="group cursor-pointer">
-              <div className="text-3xl md:text-4xl font-bold text-green-600 mb-2">
-                4.5/5
+              <div className="text-3xl md:text-4xl font-bold text-orange-600 mb-2">
+                4.8/5
               </div>
               <div className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">note moyenne</div>
             </div>
