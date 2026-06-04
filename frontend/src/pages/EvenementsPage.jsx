@@ -24,20 +24,20 @@ const EvenementsPage = () => {
         
         {/* En-tête */}
         <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-blue-900 uppercase mb-3">
             Événements
           </h1>
           <p className="text-gray-500 max-w-2xl mx-auto">
             Cliquez sur une carte pour découvrir les détails
           </p>
-          <div className="w-16 h-0.5 bg-gray-300 mx-auto mt-4 rounded-full"></div>
+      
         </div>
 
         {/* Bouton vers galerie complète */}
         <div className="flex justify-end mb-8">
           <button
             onClick={handleVoirTouteLaGalerie}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+            className="flex items-center gap-2 text-blue-700 hover:text-blue-900 font-medium transition-colors"
           >
             Voir toute la galerie
             <HiArrowRight className="w-4 h-4" />
@@ -56,7 +56,7 @@ const EvenementsPage = () => {
 
         {/* Section galerie aperçu */}
         <div className="mt-16 pt-8 border-t border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-700 text-center mb-6">
+          <h2 className="text-xl font-semibold text-blue-900 text-center mb-6">
             Derniers souvenirs
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -74,7 +74,7 @@ const EvenementsPage = () => {
           <div className="text-center mt-6">
             <button
               onClick={handleVoirTouteLaGalerie}
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors"
             >
               Voir plus de photos
               <HiArrowRight className="w-4 h-4" />

@@ -73,8 +73,8 @@ const Navbar = () => {
 
         {/* BOUTON COMPTE - Toujours visible sur desktop et mobile */}
         <div className="flex items-center z-50 space-x-4">
-          <Link to="/register" className="px-5 py-2 bg-orange-600 text-white rounded-md font-medium hover:bg-orange-700 transition text-sm">
-            Compte
+          <Link to="/login" className="px-5 py-2 bg-orange-600 text-white rounded-md font-medium hover:bg-orange-700 transition text-sm">
+            Connexion
           </Link>
           
           {/* Menu Hamburger - visible uniquement sur mobile */}
@@ -92,9 +92,9 @@ const Navbar = () => {
           <Link to="/services" onClick={() => setIsOpen(false)} className="w-full py-2 border-b text-gray-800 hover:text-orange-500">Nos Services</Link>
           <Link to="/elearning" onClick={() => setIsOpen(false)} className="w-full py-2 border-b text-gray-800 hover:text-orange-500">E-learning</Link>
           <Link to="/formationSessions" onClick={() => setIsOpen(false)} className="w-full py-2 border-b text-gray-800 hover:text-orange-500">Sessions Programmées</Link>
-          <button onClick={() => handleScrollTo('evenements')} className="w-full py-2 border-b text-left text-gray-800 hover:text-orange-500">Évènements</button>
+            <Link to="/evenements" onClick={() => setIsOpen(false)} className="w-full py-2 border-b text-gray-800 hover:text-orange-500">Évènements</Link>
           <button onClick={() => handleScrollTo('temoignages')} className="w-full py-2 border-b text-left text-gray-800 hover:text-orange-500">Témoignages</button>
-          <button onClick={() => handleScrollTo('faq')} className={`transition hover:text-orange-500 ${isDarkText ? 'text-gray-700' : 'text-white'}`}>FAQ</button>
+         <button onClick={() => handleScrollTo('faq')} className="w-full py-2 border-b text-left text-gray-800 hover:text-orange-500">FAQ</button>
           <button onClick={() => handleScrollTo('contact')} className="w-full py-2 border-b text-left text-gray-800 hover:text-orange-500">Contact</button>
         </div>
       </div>

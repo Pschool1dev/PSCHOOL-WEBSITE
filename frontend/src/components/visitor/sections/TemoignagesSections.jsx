@@ -98,7 +98,7 @@ const TemoignagesSections = () => {
                       {t.avatar}
                     </div>
                     <div>
-                      <div className="font-bold text-gray-800 text-base">
+                      <div className="font-bold text-blue-900 text-base">
                         {t.name}
                       </div>
                       <div className="text-orange-500 text-xs font-medium">
@@ -119,25 +119,25 @@ const TemoignagesSections = () => {
               <div className="text-3xl md:text-4xl font-bold text-orange-600 mb-2">
                 98%
               </div>
-              <div className="text-sm text-gray-500 group-hover:text-orange-700 transition-colors">taux de satisfaction</div>
+              <div className="text-sm text-blue-900 group-hover:text-blue-900 transition-colors">taux de satisfaction</div>
             </div>
             <div className="group cursor-pointer">
               <div className="text-3xl md:text-4xl font-bold text-orange-600 mb-2">
                 2000+
               </div>
-              <div className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">apprenants formés</div>
+              <div className="text-sm text-blue-900 group-hover:text-blue-900 transition-colors">apprenants formés</div>
             </div>
             <div className="group cursor-pointer">
               <div className="text-3xl md:text-4xl font-bold text-orange-600 mb-2">
                 85%
               </div>
-              <div className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">d'insertion professionnelle</div>
+              <div className="text-sm text-blue-900 group-hover:text-blue-900 transition-colors">d'insertion professionnelle</div>
             </div>
             <div className="group cursor-pointer">
               <div className="text-3xl md:text-4xl font-bold text-orange-600 mb-2">
                 4.8/5
               </div>
-              <div className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">note moyenne</div>
+              <div className="text-sm text-blue-900 group-hover:text-blue-900 transition-colors">note moyenne</div>
             </div>
           </div>
         </div>

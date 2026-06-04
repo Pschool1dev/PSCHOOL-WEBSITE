@@ -90,7 +90,7 @@ const ContactSection = () => {
           <div className="bg-white rounded-2xl p-8 border border-gray-200 flex flex-col">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
               <HiOutlineChat className="w-6 h-6 text-orange-500" />
-              <h3 className="text-xl font-bold text-gray-800">Envoyez-nous un message</h3>
+              <h3 className="text-xl font-bold text-blue-900">Envoyez-nous un message</h3>
             </div>
             
             {submitted && (

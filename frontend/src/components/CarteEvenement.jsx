@@ -6,9 +6,9 @@ const CarteEvenement = ({ evenement }) => {
 
   const getBadgeColor = (color) => {
     const colors = {
-      green: 'bg-green-100 text-green-700',
-      orange: 'bg-orange-100 text-orange-700',
-      blue: 'bg-blue-100 text-blue-700'
+      green: 'bg-white text-blue-900 uppercase',
+      orange: 'bg-white text-blue-900 uppercase',
+      blue: 'bg-white text-blue-900 uppercase'
     };
     return colors[color] || 'bg-gray-100 text-gray-700';
   };
