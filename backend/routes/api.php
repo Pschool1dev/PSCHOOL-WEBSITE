@@ -15,28 +15,44 @@ use App\Http\Controllers\Api\CoursController;
 use App\Http\Controllers\Api\QuizController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
+use App\Http\Controllers\Api\CinetPayController; 
+use App\Http\Controllers\Api\PaymentController;
 
+/*
+
+|--------------------------------------------------------------------------
+| Routes Publiques (Accessibles sans connexion)
+|--------------------------------------------------------------------------
+*/
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/auth/login-badge', [AuthController::class, 'loginBadge']);
 Route::post('/contact', [ContactController::class, 'store']);
 
-   Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink']);
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink']);
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
 
-// routes/api.php
-Route::get('/formations/{id}/contenu', [CoursController::class, 'getContenuFormation'])
-     ->middleware('auth:sanctum');
 Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/{id}', [ServiceController::class, 'show']);
 Route::get('/formations', [FormationController::class, 'index']);
 Route::get('/formations/{id}', [FormationController::class, 'show']);
 Route::get('/formateurs', [AuthController::class, 'getFormateurs']);
 Route::post('/formations/{formationId}/inscription-session', [InscriptionSessionController::class, 'store']);
+
+// AJOUT : Le webhook CinetPay appelé par les serveurs externes (doit être public sans auth)
+Route::post('/cinetpay/webhook', [CinetPayController::class, 'webhook']);
+
+
+Route::get('/formations/{id}/contenu', [CoursController::class, 'getContenuFormation'])
+     ->middleware('auth:sanctum');
+
 Route::middleware('auth:sanctum')->group(function () {
    
+    // AJOUT : Initialisation du paiement par un utilisateur connecté
+    Route::post('/v1/payment/initiate', [CinetPayController::class, 'initiate']);
+
     Route::apiResource('users', UserController::class);
-     Route::get('/enfants', [EnfantController::class, 'index']);
+    Route::get('/enfants', [EnfantController::class, 'index']);
     Route::post('/enfants', [EnfantController::class, 'store']);
     Route::delete('/enfants/{id}', [EnfantController::class, 'destroy']);
     Route::get('/parent/suivi-enfant/{enfantId}', [InscriptionController::class, 'getSuiviEnfant']);
@@ -68,6 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/cours/{id}', [CoursController::class, 'update']);
     Route::get('/apprenant/formation/{id}/contenu', [CoursController::class, 'getContenuPourApprenant']);
     Route::post('/cours/{id}/terminer', [CoursController::class, 'terminerCours']);
+    
     // Routes Quiz
     Route::post('/formations/cours/{coursId}/quiz', [QuizController::class, 'store']); 
     Route::get('/formations/cours/{coursId}/quiz', [QuizController::class, 'show']);   
@@ -83,11 +100,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/messages', [ContactController::class, 'index']);
     Route::put('/admin/messages/{id}/toggle-lu', [ContactController::class, 'toggleLu']);
 
-     Route::get('/inscriptions-session', [InscriptionSessionController::class, 'index']);
+    Route::get('/inscriptions-session', [InscriptionSessionController::class, 'index']);
     Route::get('/inscriptions-session/{id}', [InscriptionSessionController::class, 'show']);
     Route::put('/inscriptions-session/{id}/statut', [InscriptionSessionController::class, 'updateStatut']);
     Route::delete('/inscriptions-session/{id}', [InscriptionSessionController::class, 'destroy']);
     Route::get('/inscriptions-session/export/csv', [InscriptionSessionController::class, 'export']);
 
- 
+    Route::post('/payment/initiate', [PaymentController::class, 'initiatePayment'])->middleware('auth:sanctum');
+    Route::post('/payment/callback', [PaymentController::class, 'handleCallback']);
+    Route::get('/payment/return', [PaymentController::class, 'handleReturn']);
 });

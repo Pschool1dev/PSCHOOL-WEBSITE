@@ -78,6 +78,9 @@ const api = {
 
     logout() {
         return this.post('/logout');
+    },
+     initiateCinetPay(amount, email) {
+        return this.post('/v1/payment/initiate', { amount, email });
     }
 };
 

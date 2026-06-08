@@ -14,6 +14,7 @@ const GestionPaiements = () => {
   const [recherche, setRecherche] = useState('');
   const [filtreStatut, setFiltreStatut] = useState('tous');
   const [filtreMode, setFiltreMode] = useState('tous');
+  const [filtreType, setFiltreType] = useState('tous');
   const [paiements, setPaiements] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [modalDetailsOuverte, setModalDetailsOuverte] = useState(false);
@@ -37,6 +38,28 @@ const GestionPaiements = () => {
     fetchPaiements();
   }, []);
 
+  // Déterminer le type de transaction (simulation ou CinetPay)
+  const getTransactionType = (paiement) => {
+    if (paiement.transactionId?.startsWith('SIM-')) return 'simulation';
+    if (paiement.transactionId?.startsWith('PSCHOOL_')) return 'cinetpay';
+    if (paiement.mode === 'essai') return 'essai';
+    return 'unknown';
+  };
+
+  // Afficher le badge du type de transaction
+  const getTypeTransactionBadge = (type) => {
+    switch(type) {
+      case 'cinetpay':
+        return <span className="ml-2 text-[9px] font-bold bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">CinetPay</span>;
+      case 'simulation':
+        return <span className="ml-2 text-[9px] font-bold bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full">Simulation</span>;
+      case 'essai':
+        return <span className="ml-2 text-[9px] font-bold bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">Essai</span>;
+      default:
+        return null;
+    }
+  };
+
   // Filtrer les paiements
   const paiementsFiltres = paiements.filter(p => {
     const matchRecherche = (p.apprenant?.toLowerCase().includes(recherche.toLowerCase()) || false) ||
@@ -44,7 +67,9 @@ const GestionPaiements = () => {
                            (p.transactionId?.toLowerCase().includes(recherche.toLowerCase()) || false);
     const matchStatut = filtreStatut === 'tous' || p.statut === filtreStatut;
     const matchMode = filtreMode === 'tous' || p.mode === filtreMode;
-    return matchRecherche && matchStatut && matchMode;
+    const transactionType = getTransactionType(p);
+    const matchType = filtreType === 'tous' || transactionType === filtreType;
+    return matchRecherche && matchStatut && matchMode && matchType;
   });
 
   // Calcul des statistiques dynamiques
@@ -52,6 +77,10 @@ const GestionPaiements = () => {
   const totalEnAttente = paiementsFiltres.filter(p => p.statut === 'en_attente').reduce((sum, p) => sum + Number(p.montant || 0), 0);
   const totalValide = paiementsFiltres.filter(p => p.statut === 'valide').reduce((sum, p) => sum + Number(p.montant || 0), 0);
   const totalRembourse = paiementsFiltres.filter(p => p.statut === 'rembourse').reduce((sum, p) => sum + Number(p.montant || 0), 0);
+
+  // Statistiques CinetPay
+  const totalCinetPay = paiementsFiltres.filter(p => p.transactionId?.startsWith('PSCHOOL_')).reduce((sum, p) => sum + Number(p.montant || 0), 0);
+  const totalSimulation = paiementsFiltres.filter(p => p.transactionId?.startsWith('SIM-')).reduce((sum, p) => sum + Number(p.montant || 0), 0);
 
   // Couleurs des badges de statut
   const getStatutColor = (statut) => {
@@ -82,6 +111,7 @@ const GestionPaiements = () => {
       case 'wave': return 'Wave';
       case 'carte': return 'Carte bancaire';
       case 'moov_money': return 'Moov Money';
+      case 'cinetpay': return 'CinetPay';
       case 'essai': return 'Aucun (Essai)';
       default: return mode;
     }
@@ -93,20 +123,22 @@ const GestionPaiements = () => {
       case 'wave': return 'bg-purple-50 text-purple-700 border border-purple-200';
       case 'carte': return 'bg-blue-50 text-blue-700 border border-blue-200';
       case 'moov_money': return 'bg-yellow-50 text-yellow-700 border border-yellow-200';
+      case 'cinetpay': return 'bg-green-50 text-green-700 border border-green-200';
       default: return 'bg-gray-50 text-gray-700 border';
     }
   };
 
-  // Forcer la validation manuelle d'un paiement en suspens (Action Admin)
+  // Forcer la validation manuelle d'un paiement en suspens
   const handleValider = async (id) => {
     try {
       toast.loading("Validation forcée de la transaction...");
-      await api.put(`/inscriptions/${id}/valider-paiement-manuel`); // Route à créer si nécessaire
+      await api.put(`/inscriptions/${id}/valider`);
       toast.dismiss();
       toast.success("Paiement validé avec succès !");
       fetchPaiements();
     } catch (err) {
       toast.dismiss();
+      console.error("Erreur validation:", err);
       toast.error("Erreur lors de la validation");
     }
   };
@@ -116,12 +148,13 @@ const GestionPaiements = () => {
     if (window.confirm('Êtes-vous sûr de vouloir marquer cette inscription comme remboursée ?')) {
       try {
         toast.loading("Mise à jour du remboursement...");
-        await api.put(`/inscriptions/${id}/rembourser`); // Route optionnelle
+        await api.put(`/inscriptions/${id}/annuler`);
         toast.dismiss();
         toast.success("Remboursement enregistré.");
         fetchPaiements();
       } catch (err) {
         toast.dismiss();
+        console.error("Erreur remboursement:", err);
         toast.error("Erreur de traitement");
       }
     }
@@ -134,12 +167,13 @@ const GestionPaiements = () => {
 
   // Exporter la situation comptable réelle en CSV
   const handleExporterCSV = () => {
-    const headers = ['ID', 'Apprenant', 'Formation', 'Montant', 'Mode', 'Date', 'Statut', 'Transaction ID', 'Téléphone'];
+    const headers = ['ID', 'Apprenant', 'Formation', 'Montant', 'Type', 'Mode', 'Date', 'Statut', 'Transaction ID', 'Téléphone'];
     const rows = paiementsFiltres.map(p => [
       p.id,
       p.apprenant,
       p.formation,
       p.montant,
+      getTransactionType(p),
       getModeLabel(p.mode),
       p.date ? new Date(p.date).toLocaleString('fr-FR') : '-',
       getStatutLabel(p.statut),
@@ -189,7 +223,7 @@ const GestionPaiements = () => {
         </button>
       </div>
 
-      {/* Statistiques Dynamiques */}
+      {/* Statistiques Globales */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
           <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Chiffre d'Affaires Global</p>
@@ -200,12 +234,30 @@ const GestionPaiements = () => {
           <p className="text-2xl font-black text-orange-600 mt-1">{formatPrix(totalEnAttente)}</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
-          <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Total Encaissé Securisé</p>
+          <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Total Encaissé</p>
           <p className="text-2xl font-black text-green-600 mt-1">{formatPrix(totalValide)}</p>
         </div>
         <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
-          <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Total Décaissements (Remboursé)</p>
+          <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Total Remboursé</p>
           <p className="text-2xl font-black text-purple-600 mt-1">{formatPrix(totalRembourse)}</p>
+        </div>
+      </div>
+
+      {/* Statistiques CinetPay vs Simulation */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 p-5 shadow-sm">
+          <p className="text-green-700 text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+             Paiements CinetPay
+          </p>
+          <p className="text-2xl font-black text-green-700 mt-1">{formatPrix(totalCinetPay)}</p>
+          <p className="text-xs text-green-600 mt-1">Transactions sécurisées</p>
+        </div>
+        <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border border-yellow-200 p-5 shadow-sm">
+          <p className="text-yellow-700 text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+             Paiements de simulation
+          </p>
+          <p className="text-2xl font-black text-yellow-700 mt-1">{formatPrix(totalSimulation)}</p>
+          <p className="text-xs text-yellow-600 mt-1">Tests uniquement</p>
         </div>
       </div>
 
@@ -226,9 +278,9 @@ const GestionPaiements = () => {
           onChange={(e) => setFiltreStatut(e.target.value)}
           className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none text-sm bg-white font-medium text-gray-700"
         >
-          <option value="tous">Tous les états financiers</option>
+          <option value="tous">Tous les états</option>
           <option value="valide">Validés (Payés)</option>
-          <option value="essai">En mode Essai</option>
+          <option value="essai">Mode Essai</option>
           <option value="en_attente">En attente</option>
           <option value="echoue">Échoués</option>
           <option value="rembourse">Remboursés</option>
@@ -243,7 +295,18 @@ const GestionPaiements = () => {
           <option value="moov_money">Moov Money</option>
           <option value="wave">Wave</option>
           <option value="carte">Carte bancaire</option>
-          <option value="essai">Sans paiement (Essai)</option>
+          <option value="cinetpay">CinetPay</option>
+          <option value="essai">Essai gratuit</option>
+        </select>
+        <select
+          value={filtreType}
+          onChange={(e) => setFiltreType(e.target.value)}
+          className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none text-sm bg-white font-medium text-gray-700"
+        >
+          <option value="tous">Tous les types</option>
+          <option value="cinetpay">CinetPay réel</option>
+          <option value="simulation">Simulation</option>
+          <option value="essai">Essai gratuit</option>
         </select>
       </div>
 
@@ -260,68 +323,75 @@ const GestionPaiements = () => {
       ) : (
         <div className="bg-white rounded-xl border overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1000px] text-left border-collapse">
+            <table className="w-full min-w-[1100px] text-left border-collapse">
               <thead className="bg-gray-50 border-b text-gray-600 text-xs font-bold uppercase tracking-wider">
                 <tr>
                   <th className="px-6 py-4">ID Ref</th>
                   <th className="px-6 py-4">Apprenant</th>
                   <th className="px-6 py-4">Formation</th>
-                  <th className="px-6 py-4">Montant initial</th>
-                  <th className="px-6 py-4">Mode d'encaissement</th>
-                  <th className="px-6 py-4">Date écriture</th>
-                  <th className="px-6 py-4">Statut Transaction</th>
-                  <th className="text-center px-6 py-4">Ajustements</th>
+                  <th className="px-6 py-4">Montant</th>
+                  <th className="px-6 py-4">Type</th>
+                  <th className="px-6 py-4">Mode</th>
+                  <th className="px-6 py-4">Date</th>
+                  <th className="px-6 py-4">Statut</th>
+                  <th className="text-center px-6 py-4">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y text-sm text-gray-700">
-                {paiementsFiltres.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50/60 transition-colors">
-                    <td className="px-6 py-4 font-mono text-xs text-gray-400">#{p.id}</td>
-                    <td className="px-6 py-4 font-semibold text-gray-900">{p.apprenant}</td>
-                    <td className="px-6 py-4 text-gray-600">{p.formation}</td>
-                    <td className="px-6 py-4 font-bold text-slate-900">{formatPrix(p.montant)}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getModeColor(p.mode)}`}>
-                        {getModeLabel(p.mode)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-gray-500 text-xs">{formatDate(p.date)}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${getStatutColor(p.statut)}`}>
-                        {getStatutLabel(p.statut)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <button 
-                          onClick={() => handleVoirDetails(p)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-200 rounded-lg transition"
-                          title="Fiche détaillée"
-                        >
-                          <HiOutlineEye className="h-5 w-5" />
-                        </button>
-                        {p.statut === 'en_attente' && (
+                {paiementsFiltres.map((p) => {
+                  const transactionType = getTransactionType(p);
+                  return (
+                    <tr key={p.id} className="hover:bg-gray-50/60 transition-colors">
+                      <td className="px-6 py-4 font-mono text-xs text-gray-400">#{p.id}</td>
+                      <td className="px-6 py-4 font-semibold text-gray-900">{p.apprenant}</td>
+                      <td className="px-6 py-4 text-gray-600">{p.formation}</td>
+                      <td className="px-6 py-4 font-bold text-slate-900">{formatPrix(p.montant)}</td>
+                      <td className="px-6 py-4">
+                        {getTypeTransactionBadge(transactionType)}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getModeColor(p.mode)}`}>
+                          {getModeLabel(p.mode)}
+                        </span>
+                       </td>
+                      <td className="px-6 py-4 text-gray-500 text-xs">{formatDate(p.date)}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${getStatutColor(p.statut)}`}>
+                          {getStatutLabel(p.statut)}
+                        </span>
+                       </td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
                           <button 
-                            onClick={() => handleValider(p.id)}
-                            className="p-2 text-green-600 hover:bg-green-50 border border-transparent hover:border-green-200 rounded-lg transition"
-                            title="Forcer la validation financière"
+                            onClick={() => handleVoirDetails(p)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-200 rounded-lg transition"
+                            title="Détails"
                           >
-                            <HiOutlineCheckCircle className="h-5 w-5" />
+                            <HiOutlineEye className="h-5 w-5" />
                           </button>
-                        )}
-                        {p.statut === 'valide' && (
-                          <button 
-                            onClick={() => handleRembourser(p.id)}
-                            className="p-2 text-purple-600 hover:bg-purple-50 border border-transparent hover:border-purple-200 rounded-lg transition"
-                            title="Marquer comme Remboursé"
-                          >
-                            <HiOutlineRefresh className="h-5 w-5" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          {p.statut === 'en_attente' && transactionType === 'cinetpay' && (
+                            <button 
+                              onClick={() => handleValider(p.id)}
+                              className="p-2 text-green-600 hover:bg-green-50 border border-transparent hover:border-green-200 rounded-lg transition"
+                              title="Valider"
+                            >
+                              <HiOutlineCheckCircle className="h-5 w-5" />
+                            </button>
+                          )}
+                          {p.statut === 'valide' && transactionType === 'cinetpay' && (
+                            <button 
+                              onClick={() => handleRembourser(p.id)}
+                              className="p-2 text-purple-600 hover:bg-purple-50 border border-transparent hover:border-purple-200 rounded-lg transition"
+                              title="Rembourser"
+                            >
+                              <HiOutlineRefresh className="h-5 w-5" />
+                            </button>
+                          )}
+                        </div>
+                       </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -336,7 +406,7 @@ const GestionPaiements = () => {
             <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border">
               <div className="flex items-center justify-between p-6 border-b bg-gray-50">
                 <div>
-                  <h2 className="text-base font-black text-gray-900 uppercase tracking-tight">Pièce Comptable</h2>
+                  <h2 className="text-base font-black text-gray-900 uppercase tracking-tight">Détail Transaction</h2>
                   <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">ID #{paiementSelectionne.id}</p>
                 </div>
                 <button onClick={() => setModalDetailsOuverte(false)} className="p-2 bg-white border rounded-xl hover:text-red-500 transition shadow-sm">
@@ -345,38 +415,44 @@ const GestionPaiements = () => {
               </div>
               <div className="p-6 space-y-4 text-sm divide-y divide-gray-50">
                 <div className="flex justify-between pt-1">
-                  <span className="text-gray-400 font-medium">Nom de l'Apprenant</span>
+                  <span className="text-gray-400 font-medium">Apprenant</span>
                   <span className="font-bold text-gray-900">{paiementSelectionne.apprenant}</span>
                 </div>
                 <div className="flex justify-between pt-3">
-                  <span className="text-gray-400 font-medium">Formation ciblée</span>
+                  <span className="text-gray-400 font-medium">Formation</span>
                   <span className="font-semibold text-gray-800">{paiementSelectionne.formation}</span>
                 </div>
                 <div className="flex justify-between pt-3">
-                  <span className="text-gray-400 font-medium">Frais d'inscription</span>
+                  <span className="text-gray-400 font-medium">Montant</span>
                   <span className="font-black text-emerald-600 text-base">{formatPrix(paiementSelectionne.montant)}</span>
                 </div>
                 <div className="flex justify-between pt-3">
-                  <span className="text-gray-400 font-medium">Passerelle de Paiement</span>
+                  <span className="text-gray-400 font-medium">Type</span>
+                  <span>{getTypeTransactionBadge(getTransactionType(paiementSelectionne))}</span>
+                </div>
+                <div className="flex justify-between pt-3">
+                  <span className="text-gray-400 font-medium">Mode de paiement</span>
                   <span className="font-bold text-gray-800">{getModeLabel(paiementSelectionne.mode)}</span>
                 </div>
                 <div className="flex justify-between pt-3">
-                  <span className="text-gray-400 font-medium">Date & Heure d'écriture</span>
+                  <span className="text-gray-400 font-medium">Date & Heure</span>
                   <span className="font-medium text-gray-700 text-xs">{formatDate(paiementSelectionne.date)}</span>
                 </div>
                 <div className="flex justify-between pt-3">
-                  <span className="text-gray-400 font-medium">État comptable</span>
+                  <span className="text-gray-400 font-medium">Statut</span>
                   <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${getStatutColor(paiementSelectionne.statut)}`}>
                     {getStatutLabel(paiementSelectionne.statut)}
                   </span>
                 </div>
                 <div className="flex justify-between pt-3">
-                  <span className="text-gray-400 font-medium">Référence CinetPay ID</span>
-                  <span className="font-mono text-[11px] bg-slate-50 px-2 py-1 rounded border text-slate-600">{paiementSelectionne.transactionId}</span>
+                  <span className="text-gray-400 font-medium">Référence Transaction</span>
+                  <span className="font-mono text-[11px] bg-slate-50 px-2 py-1 rounded border text-slate-600 break-all max-w-[200px] text-right">
+                    {paiementSelectionne.transactionId || 'N/A'}
+                  </span>
                 </div>
                 {paiementSelectionne.telephone && (
                   <div className="flex justify-between pt-3">
-                    <span className="text-gray-400 font-medium">Contact Émetteur</span>
+                    <span className="text-gray-400 font-medium">Téléphone</span>
                     <span className="font-semibold text-gray-800">{paiementSelectionne.telephone}</span>
                   </div>
                 )}
@@ -386,7 +462,7 @@ const GestionPaiements = () => {
                   onClick={() => setModalDetailsOuverte(false)}
                   className="w-full py-3 bg-white border-2 text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-100 transition shadow-sm"
                 >
-                  Quitter la fiche
+                  Fermer
                 </button>
               </div>
             </div>

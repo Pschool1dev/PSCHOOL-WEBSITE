@@ -128,13 +128,13 @@ const ContactSection = () => {
                     value={formData.email}
                     onChange={handleChange}
                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
-                    placeholder="EX : nom@email.com"
+                    placeholder="EX : kouka@gmail.com"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone WhatsApp <span className='text-red-500'>*</span></label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone (De Préférence WhatsApp ) <span className='text-red-500'>*</span></label>
                 <input
                   type="tel"
                   name="telephone"

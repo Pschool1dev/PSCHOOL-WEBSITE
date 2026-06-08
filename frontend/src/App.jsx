@@ -28,6 +28,8 @@ import InscriptionSessionPage from './pages/InscriptionSessionPage';
 import InscriptionSessionAdultePage from './pages/InscriptionAdultePage';
 import EvenementsPage from './pages/EvenementsPage';
 import Galerie from './pages/Galerie';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentError from './pages/PaymentError';
 
 const PublicLayout = () => {
   return (
@@ -95,6 +97,9 @@ function App() {
 
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+
+              <Route path="/paiement/succes" element={<PaymentSuccess />} />
+              <Route path="/paiement/erreur" element={<PaymentError />} />
             </Routes>
           </AuthProvider>
         </Router>

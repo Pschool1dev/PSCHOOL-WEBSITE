@@ -9,7 +9,8 @@ class Inscription extends Model
     protected $fillable = [
     'user_id', 'formation_id', 'date_inscription', 'statut', 
     'statut_paiement', 'transaction_id', 'montant_paye', 
-    'mode_paiement', 'progression'
+    'mode_paiement', 'progression','paiement_type',
+        'cinetpay_transaction_id'
 ];
 
     protected $casts = [
@@ -25,4 +26,12 @@ class Inscription extends Model
     {
         return $this->belongsTo(Formation::class);
     }
+    // Dans la classe Inscription, ajoute :
+
+    public function cinetpayTransaction()
+    {
+        return $this->belongsTo(CinetpayTransaction::class);
+    }
+
+  
 }

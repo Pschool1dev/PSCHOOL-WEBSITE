@@ -6,12 +6,15 @@ import toast, { Toaster } from 'react-hot-toast';
 const ParentPaiements = () => {
   const [fraisFormations, setFraisFormations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null);
+
+  // Récupérer l'utilisateur connecté
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   // Charger les inscriptions des enfants du parent
   const fetchPaiementsEnfants = async () => {
     try {
       setLoading(true);
-      // On appelle une route Laravel qui récupère les inscriptions de TOUS les enfants de ce parent
       const res = await api.get('/parent/enfants/inscriptions');
       setFraisFormations(res);
     } catch (err) {
@@ -26,25 +29,76 @@ const ParentPaiements = () => {
     fetchPaiementsEnfants();
   }, []);
 
-  // Fonction pour payer la formation d'un enfant (Simulation Full-Stack)
-  const handlePayerFormation = async (inscriptionId, enfantNom, formationTitre) => {
+  // Vérifier si on est en mode production ou développement
+  const isProduction = process.env.NODE_ENV === 'production';
+  const useCinetPay = process.env.REACT_APP_PAYMENT_MODE === 'cinetpay' || isProduction;
+
+  // Paiement réel avec CinetPay
+  const handleCinetPayPayment = async (inscriptionId, enfantNom, formationTitre, montant, telephone) => {
+    setProcessingId(inscriptionId);
+    
     try {
-      toast.loading(`Ouverture du guichet CinetPay pour ${enfantNom}...`);
-
-      // On appelle notre API de simulation Laravel (en lui passant l'ID de l'inscription)
-      const res = await api.post('/payment/simulate-parent', {
-        inscription_id: inscriptionId
+      toast.loading(`Préparation du paiement pour ${enfantNom}...`);
+      
+      const response = await api.post('/payment/initiate', {
+        inscription_id: inscriptionId,
+        telephone: telephone,
+        email: user.email
       });
-
+      
       toast.dismiss();
-
-      if (res.status === 'success') {
-        toast.success(`Félicitations ! La formation de ${enfantNom} est entièrement débloquée.`);
-        fetchPaiementsEnfants(); // Recharger le tableau
+      
+      if (response.data.success && response.data.payment_url) {
+        // Rediriger vers CinetPay
+        window.location.href = response.data.payment_url;
+      } else {
+        toast.error("Erreur lors de l'initiation du paiement");
+        setProcessingId(null);
       }
     } catch (error) {
       toast.dismiss();
-      toast.error("Erreur lors du traitement du paiement.");
+      console.error("Erreur paiement CinetPay:", error);
+      toast.error(error.response?.data?.message || "Erreur lors du traitement du paiement");
+      setProcessingId(null);
+    }
+  };
+
+  // Paiement simulé (développement)
+  const handleSimulatedPayment = async (inscriptionId, enfantNom) => {
+    setProcessingId(inscriptionId);
+    
+    try {
+      toast.loading(`Simulation de paiement pour ${enfantNom}...`);
+      
+      const res = await api.post('/payment/simulate-parent', {
+        inscription_id: inscriptionId
+      });
+      
+      toast.dismiss();
+      
+      if (res.status === 'success') {
+        toast.success(`Félicitations ! La formation de ${enfantNom} est entièrement débloquée.`);
+        fetchPaiementsEnfants();
+      } else {
+        toast.error("Erreur lors de la simulation du paiement");
+      }
+    } catch (error) {
+      toast.dismiss();
+      console.error("Erreur simulation:", error);
+      toast.error("Erreur lors de la simulation du paiement");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  // Point d'entrée principal pour le paiement
+  const handlePayerFormation = (inscriptionId, enfantNom, formationTitre, montant, telephone) => {
+    if (useCinetPay && montant > 0) {
+      // Paiement réel CinetPay
+      handleCinetPayPayment(inscriptionId, enfantNom, formationTitre, montant, telephone);
+    } else {
+      // Simulation (développement)
+      handleSimulatedPayment(inscriptionId, enfantNom);
     }
   };
 
@@ -64,6 +118,16 @@ const ParentPaiements = () => {
         <p className="text-gray-500 text-sm mt-1">
           Suivez les statuts financiers et débloquez les cours complets de vos enfants.
         </p>
+        {!useCinetPay && (
+          <p className="text-xs text-amber-600 mt-2 bg-amber-50 inline-block px-3 py-1 rounded-full">
+             Mode simulation - Paiements de test uniquement
+          </p>
+        )}
+        {useCinetPay && (
+          <p className="text-xs text-green-600 mt-2 bg-green-50 inline-block px-3 py-1 rounded-full">
+             Mode production - Paiements réels CinetPay
+          </p>
+        )}
       </div>
 
       {fraisFormations.length === 0 ? (
@@ -108,11 +172,22 @@ const ParentPaiements = () => {
                         </span>
                       ) : (
                         <button
-                          onClick={() => handlePayerFormation(item.id, item.enfant_nom, item.formation_titre)}
-                          className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium text-xs transition shadow-sm"
+                          onClick={() => handlePayerFormation(
+                            item.id, 
+                            item.enfant_nom, 
+                            item.formation_titre, 
+                            item.montant,
+                            item.telephone_parent
+                          )}
+                          disabled={processingId === item.id}
+                          className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium text-xs transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <HiLockClosed />
-                          Régler par Mobile Money
+                          {processingId === item.id ? (
+                            <div className="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></div>
+                          ) : (
+                            <HiLockClosed />
+                          )}
+                          {processingId === item.id ? 'Traitement...' : 'Régler par Mobile Money'}
                         </button>
                       )}
                     </td>

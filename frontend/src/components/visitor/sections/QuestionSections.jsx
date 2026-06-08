@@ -14,21 +14,18 @@ const FAQ = () => {
       reponse: "Oui, à l'issue de chaque formation, vous recevez un certificat de réussite reconnu par nos partenaires."
     },
     {
-      question: "Puis-je suivre une formation à distance ?",
-      reponse: "Oui, nous proposons des formations en présentiel dans nos centres (Ouaga 2000, Bobo-Dioulasso) et en ligne via notre plateforme e-learning."
+      question: "Puis-je suivre une formation intensive à distance ?",
+      reponse: "Oui, nous proposons des formations en présentiel dans nos centres (Ouaga 2000, Bobo-Dioulasso) et en ligne . Nous proposons egalement des formations e-learning pour enfants et pour adultes à suivre selon votre disponibilité "
     },
     {
       question: "Quels sont les modes de paiement acceptés ?",
       reponse: "Nous acceptons les paiements par Mobile Money (Orange Money, Moov Money), virement bancaire et bientôt Carte Bancaire."
     },
     {
-      question: "Comment inscrire mon enfant à une formation ?",
+      question: "Comment inscrire mon enfant à une formation e-learning ?",
       reponse: "Créez un compte Parent, puis ajoutez vos enfants dans l'espace 'Mes enfants' et choisissez les formations qui les intéressent."
-    },
-    {
-      question: "Que faire si j'oublie mon mot de passe ?",
-      reponse: "Cliquez sur 'Mot de passe oublié' sur la page de connexion, un lien de réinitialisation vous sera envoyé par email."
     }
+  
   ];
 
   const toggleQuestion = (index) => {
