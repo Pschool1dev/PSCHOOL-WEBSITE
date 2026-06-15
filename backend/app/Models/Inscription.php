@@ -33,5 +33,17 @@ class Inscription extends Model
         return $this->belongsTo(CinetpayTransaction::class);
     }
 
+    // Ajouter cette relation
+public function certificat()
+{
+    return $this->hasOne(Certificat::class);
+}
+
+// Ajouter cette méthode pour vérifier si le certificat peut être généré
+public function peutGenererCertificat(): bool
+{
+    return $this->progression >= 100 && $this->statut_paiement === 'paye';
+}
+
   
 }

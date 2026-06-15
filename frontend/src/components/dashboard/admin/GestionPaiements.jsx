@@ -244,7 +244,7 @@ const GestionPaiements = () => {
       </div>
 
       {/* Statistiques CinetPay vs Simulation */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+       {/*<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 p-5 shadow-sm">
           <p className="text-green-700 text-xs font-bold uppercase tracking-wider flex items-center gap-2">
              Paiements CinetPay
@@ -259,7 +259,7 @@ const GestionPaiements = () => {
           <p className="text-2xl font-black text-yellow-700 mt-1">{formatPrix(totalSimulation)}</p>
           <p className="text-xs text-yellow-600 mt-1">Tests uniquement</p>
         </div>
-      </div>
+      </div>*/}
 
       {/* Barre de recherche et filtres */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">

@@ -17,13 +17,11 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\CinetPayController; 
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\CertificatController;
 
-/*
 
-|--------------------------------------------------------------------------
-| Routes Publiques (Accessibles sans connexion)
-|--------------------------------------------------------------------------
-*/
+
+// Routes Publiques (Accessibles sans connexion)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/auth/login-badge', [AuthController::class, 'loginBadge']);
@@ -39,6 +37,7 @@ Route::get('/formations/{id}', [FormationController::class, 'show']);
 Route::get('/formateurs', [AuthController::class, 'getFormateurs']);
 Route::post('/formations/{formationId}/inscription-session', [InscriptionSessionController::class, 'store']);
 
+Route::get('/certificat/verifier-public/{numero}', [CertificatController::class, 'verifierAuthenticite']);
 // AJOUT : Le webhook CinetPay appelé par les serveurs externes (doit être public sans auth)
 Route::post('/cinetpay/webhook', [CinetPayController::class, 'webhook']);
 
@@ -109,4 +108,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/payment/initiate', [PaymentController::class, 'initiatePayment'])->middleware('auth:sanctum');
     Route::post('/payment/callback', [PaymentController::class, 'handleCallback']);
     Route::get('/payment/return', [PaymentController::class, 'handleReturn']);
+
+    Route::get('/certificat/verifier/{formationId}', [CertificatController::class, 'verifierDisponibilite']);
+    Route::post('/certificat/generer', [CertificatController::class, 'generer']);
+    Route::get('/certificats', [CertificatController::class, 'mesCertificats']);
+    Route::get('/certificat/{id}', [CertificatController::class, 'show']);
+    Route::get('/certificat/{id}/telecharger', [CertificatController::class, 'telecharger']);
+
 });

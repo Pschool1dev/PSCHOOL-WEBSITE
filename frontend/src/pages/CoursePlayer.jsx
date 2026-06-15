@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import QuizView from '../components/dashboard/apprenant/QuizView';
+import CertificatButton from '../components/dashboard/apprenant/CertificatButton';
 import { 
   HiOutlineChevronLeft, 
   HiCheckCircle, 
@@ -239,7 +240,7 @@ const CoursePlayer = () => {
         {isEnfant && data.statut_paiement === 'essai' && currentCoursIndex >= 2 && (
           <div className="mt-4 mx-3 mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
             <p className="text-xs text-amber-700 text-center font-medium">
-              🔒 Formation verrouillée
+               Formation verrouillée
             </p>
             <p className="text-[10px] text-amber-600 text-center mt-1">
               Demande à tes parents de débloquer la suite
@@ -343,7 +344,7 @@ const CoursePlayer = () => {
 
                   {verifierAccesChapitre(currentCoursIndex) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-amber-50 border border-amber-200 p-5 rounded-lg flex items-center justify-between">
+                      <div className="flex items-center justify-between">
                         <div>
                           <p className="text-amber-700 font-semibold text-sm">Évaluation</p>
                           <p className="text-xs text-amber-600">Quiz obligatoire</p>
@@ -356,7 +357,7 @@ const CoursePlayer = () => {
                         </button>
                       </div>
 
-                      <div className="bg-gray-50 border border-gray-200 p-5 rounded-lg flex flex-col justify-center items-center">
+                      <div className=" flex flex-col justify-center items-center">
                         {quizSuccess || (currentCours.ordre <= (data.progression / 100 * data.cours.length)) ? (
                           <button 
                             onClick={marquerCommeTermine}
@@ -377,7 +378,7 @@ const CoursePlayer = () => {
                   )}
 
                   {verifierAccesChapitre(currentCoursIndex) && !isYouTube(currentCours.contenu_url) && (
-                    <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <div className="flex items-center justify-between ">
                       <div className="flex items-center gap-3 text-sm">
                         <HiOutlineInformationCircle className="text-blue-500 text-lg" />
                         <span className="text-gray-700">Support de cours disponible</span>
@@ -393,10 +394,23 @@ const CoursePlayer = () => {
                   )}
 
                   {verifierAccesChapitre(currentCoursIndex) && (
-                    <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <div className=" p-6 ">
                       <h3 className="text-lg font-semibold text-gray-800 mb-3">À propos de ce chapitre</h3>
                       <p className="text-gray-600 leading-relaxed text-sm">{currentCours.description || "Aucune description détaillée."}</p>
                     </div>
+                  )}
+
+                  {/* SECTION CERTIFICAT - Affiche le bouton quand la formation est terminée */}
+                  {verifierAccesChapitre(currentCoursIndex) && data.progression === 100 && data.statut_paiement === 'paye' && !isEnfant && (
+                    <CertificatButton 
+                      inscriptionId={inscriptionId}
+                      formationId={id}
+                      formationTitre={data.formation_nom}
+                      onCertificatGenere={(certificat) => {
+                        console.log('Certificat généré:', certificat);
+                        toast.success("Certificat disponible !");
+                      }}
+                    />
                   )}
                 </>
               )}

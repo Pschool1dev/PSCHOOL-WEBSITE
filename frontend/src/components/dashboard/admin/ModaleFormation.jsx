@@ -137,7 +137,7 @@ const ModaleFormation = ({ isOpen, onClose, onSave, formationAModifier, formateu
               className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
             >
               <option value="elearning">E-learning</option>
-              <option value="session">Formation Programmée</option>
+              <option value="session">Session Programmée</option>
             </select>
           </div>
 

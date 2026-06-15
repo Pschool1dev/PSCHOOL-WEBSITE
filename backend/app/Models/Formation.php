@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Formation extends Model
 {
-    //
+
     protected $fillable = [
     'titre',
     'description',
@@ -39,6 +39,11 @@ public function cours()
 {
     // Indique à Laravel qu'une formation a plusieurs cours
     return $this->hasMany(Cours::class, 'formation_id')->orderBy('ordre', 'asc');
+}
+
+public function certificats()
+{
+    return $this->hasMany(Certificat::class);
 }
 }
 
