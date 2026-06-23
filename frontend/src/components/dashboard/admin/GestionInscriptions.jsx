@@ -19,7 +19,7 @@ const GestionInscriptions = () => {
     try {
       setChargement(true);
       const data = await api.get('/inscriptions');
-      console.log('Données reçues:', data); // Pour debug
+      
       setInscriptions(data);
     } catch (error) {
       console.error("Erreur de chargement:", error);

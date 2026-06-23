@@ -75,7 +75,7 @@ const HeaderApprenant = () => {
     console.error("Erreur markAsRead:", err); 
   }
 };
-console.log("Notifs non lues :", notifications.filter(n => !n.est_lu));
+
 
   return (
     <header className="bg-white px-10 py-5 flex items-center justify-between border-b border-slate-100 sticky top-0 z-[100]">

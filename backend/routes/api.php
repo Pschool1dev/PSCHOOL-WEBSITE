@@ -46,6 +46,10 @@ Route::get('/formations/{id}/contenu', [CoursController::class, 'getContenuForma
      ->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
    
     // AJOUT : Initialisation du paiement par un utilisateur connecté
     Route::post('/v1/payment/initiate', [CinetPayController::class, 'initiate']);

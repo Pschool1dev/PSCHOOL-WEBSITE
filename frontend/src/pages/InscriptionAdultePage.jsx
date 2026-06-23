@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { HiArrowLeft, HiUser, HiPhone, HiMail, HiLocationMarker, HiDesktopComputer } from 'react-icons/hi';
 
 const InscriptionAdultePage = () => {
   const { formationId } = useParams();
@@ -83,129 +84,123 @@ const InscriptionAdultePage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-green-600 mx-auto mb-3"></div>
-          <p className="text-gray-500 text-sm">Chargement...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-gray-800 mx-auto mb-3"></div>
+          <p className="text-gray-400 text-sm">Chargement...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16 bg-gray-50">
-      <div className="max-w-2xl mx-auto px-5">
-        
+    <div className="min-h-screen bg-gray-50 pt-8 pb-16 px-4 sm:px-6">
+      <div className="max-w-2xl mx-auto">
+        {/* Lien retour */}
+        <button
+          onClick={() => navigate('/formationSessions')}
+          className="group flex items-center gap-2 text-gray-400 hover:text-gray-600 text-sm transition-colors mb-6"
+        >
+          <HiArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          Retour aux sessions
+        </button>
+
         {/* En-tête */}
-        <div className="text-center mb-8">
-          <div className="inline-block px-3 py-1  rounded-full mb-3">
-            <span className="inline-flex items-center gap-2 px-6 py-2 mx-4 rounded-full text-green-600 font-semibold text-2xl uppercase tracking-wide "> Formulaire d'inscription pour adulte  </span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            Formation : {formation?.titre}
+        <div className="mb-8">
+          <h1 className="text-2xl font-light text-gray-800">
+            Inscription <span className="font-medium">{formation?.titre || ''}</span>
           </h1>
-          <p className="text-gray-500 text-sm">
-            Veuillez remplir tous les champs obligatoires (*)
-          </p>
+          <p className="text-gray-400 text-sm mt-1">Tous les champs marqués d'un * sont obligatoires</p>
         </div>
 
         {/* Formulaire */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-6">
           
           {/* Section Apprenant */}
-          <div className="mb-6">
-            <h2 className="text-md font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
-              Informations personnelles
-            </h2>
+          <section className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-5 pb-3 border-b border-gray-50">
+              <HiUser className="w-4 h-4 text-gray-400" />
+              <h2 className="text-sm font-medium text-gray-700 uppercase tracking-wider">Informations personnelles</h2>
+            </div>
             
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nom <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="parent_nom"
-                    required
-                    value={formData.parent_nom}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition"
-                    placeholder="Votre nom"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Prénom <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="parent_prenom"
-                    required
-                    value={formData.parent_prenom}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition"
-                    placeholder="Votre prénom"
-                  />
-                </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Nom <span className='text-red-600'>*</span></label>
+                <input
+                  type="text"
+                  name="parent_nom"
+                  required
+                  value={formData.parent_nom}
+                  onChange={handleChange}
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border-0 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:ring-1 focus:ring-gray-400 transition"
+                  placeholder="Votre nom"
+                />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Téléphone <span className="text-red-500">*</span>
-                  </label>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Prénom <span className='text-red-600'>*</span></label>
+                <input
+                  type="text"
+                  name="parent_prenom"
+                  required
+                  value={formData.parent_prenom}
+                  onChange={handleChange}
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border-0 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:ring-1 focus:ring-gray-400 transition"
+                  placeholder="Votre prénom"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Téléphone <span className='text-red-600'>*</span></label>
+                <div className="relative">
+                  <HiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     type="tel"
                     name="parent_telephone"
                     required
                     value={formData.parent_telephone}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition"
+                    className="w-full pl-10 pr-3.5 py-2.5 bg-gray-50 border-0 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:ring-1 focus:ring-gray-400 transition"
                     placeholder="70 12 34 56"
                   />
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email <span className="text-red-500">*</span>
-                  </label>
+              </div>
+              
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Email <span className='text-red-600'>*</span></label>
+                <div className="relative">
+                  <HiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     type="email"
                     name="apprenant_email"
                     required
                     value={formData.apprenant_email}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition"
+                    className="w-full pl-10 pr-3.5 py-2.5 bg-gray-50 border-0 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:ring-1 focus:ring-gray-400 transition"
                     placeholder="votre@email.com"
                   />
                 </div>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Adresse <span className="text-red-500">*</span>
-                </label>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Adresse <span className='text-red-600'>*</span></label>
                 <input
                   type="text"
                   name="parent_adresse"
                   required
                   value={formData.parent_adresse}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition"
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border-0 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:ring-1 focus:ring-gray-400 transition"
                   placeholder="Votre adresse complète"
                 />
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Lieu de formation <span className="text-red-500">*</span>
-                </label>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Lieu de formation <span className='text-red-600'>*</span> </label>
                 <select
                   name="parent_zone"
                   required
                   value={formData.parent_zone}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition bg-white"
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border-0 rounded-lg text-sm text-gray-700 focus:ring-1 focus:ring-gray-400 transition appearance-none"
                 >
                   <option value="">Sélectionnez un lieu</option>
                   <option value="Ouaga 2000">Ouaga 2000</option>
@@ -215,16 +210,23 @@ const InscriptionAdultePage = () => {
                 </select>
               </div>
             </div>
-          </div>
+          </section>
           
           {/* Section Format */}
-          <div className="mb-6">
-            <h2 className="text-md font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
-              Choix du format
-            </h2>
+          <section className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-5 pb-3 border-b border-gray-50">
+              <HiDesktopComputer className="w-4 h-4 text-gray-400" />
+              <h2 className="text-sm font-medium text-gray-700 uppercase tracking-wider">Choix du format <span className='text-red-600'>*</span></h2>
+            </div>
             
-            <div className="space-y-2">
-              <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50 transition">
+            <div className="grid sm:grid-cols-2 gap-3">
+              <label
+                className={`flex items-center gap-3 px-4 py-3 border rounded-lg cursor-pointer transition-all ${
+                  formData.format === 'presentiel'
+                    ? 'border-gray-400 bg-gray-50'
+                    : 'border-gray-100 hover:border-gray-300'
+                }`}
+              >
                 <input
                   type="radio"
                   name="format"
@@ -232,11 +234,18 @@ const InscriptionAdultePage = () => {
                   required
                   checked={formData.format === 'presentiel'}
                   onChange={handleChange}
-                  className="w-4 h-4 text-green-600 focus:ring-green-500"
+                  className="w-3.5 h-3.5 text-gray-700 focus:ring-gray-400"
                 />
-                <span className="text-sm text-gray-700">Cours en présentiel</span>
+                <span className="text-sm text-gray-600"> Présentiel</span>
               </label>
-              <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50 transition">
+              
+              <label
+                className={`flex items-center gap-3 px-4 py-3 border rounded-lg cursor-pointer transition-all ${
+                  formData.format === 'en_ligne'
+                    ? 'border-gray-400 bg-gray-50'
+                    : 'border-gray-100 hover:border-gray-300'
+                }`}
+              >
                 <input
                   type="radio"
                   name="format"
@@ -244,59 +253,56 @@ const InscriptionAdultePage = () => {
                   required
                   checked={formData.format === 'en_ligne'}
                   onChange={handleChange}
-                  className="w-4 h-4 text-green-600 focus:ring-green-500"
+                  className="w-3.5 h-3.5 text-gray-700 focus:ring-gray-400"
                 />
-                <span className="text-sm text-gray-700"> Cours en ligne</span>
+                <span className="text-sm text-gray-600"> En ligne</span>
               </label>
             </div>
-          </div>
+          </section>
           
           {/* Section Source */}
-          <div className="mb-8">
-            <h2 className="text-md font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
-              Comment nous avez-vous connu ?
+          <section className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
+            <h2 className="text-sm font-medium text-gray-700 uppercase tracking-wider mb-5 pb-3 border-b border-gray-50">
+              Comment nous avez-vous connu ? <span className='text-red-600'>*</span>
             </h2>
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div className="grid sm:grid-cols-3 gap-3">
               {['Proche ou connaissance', 'Réseaux sociaux', 'Médias'].map((source) => (
-                <label key={source} className="flex items-center gap-2 p-3 border border-gray-200 rounded-md cursor-pointer hover:bg-gray-50 transition">
+                <label
+                  key={source}
+                  className={`flex items-center gap-2.5 px-4 py-3 border rounded-lg cursor-pointer transition-all ${
+                    formData.source === source
+                      ? 'border-gray-400 bg-gray-50'
+                      : 'border-gray-100 hover:border-gray-300'
+                  }`}
+                >
                   <input
                     type="radio"
                     name="source"
                     value={source}
                     checked={formData.source === source}
                     onChange={handleChange}
-                    className="w-4 h-4 text-green-600 focus:ring-green-500"
+                    className="w-3.5 h-3.5 text-gray-700 focus:ring-gray-400"
                   />
                   <span className="text-sm text-gray-600">{source}</span>
                 </label>
               ))}
             </div>
-          </div>
+          </section>
           
           {/* Bouton de soumission */}
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-3 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3.5 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm tracking-wide"
           >
-            {submitting ? 'Envoi en cours...' : 'Envoyer ma pré-inscription'}
+            {submitting ? 'Envoi en cours...' : 'Envoyer la pré-inscription'}
           </button>
           
-          <p className="text-xs text-gray-400 text-center mt-4">
-            Après soumission, nous vous contacterons sous 48h pour finaliser votre inscription.
+          <p className="text-xs text-gray-400 text-center -mt-4">
+            Nous vous contacterons sous 48h pour finaliser l'inscription
           </p>
         </form>
-        
-        {/* Lien retour */}
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => navigate('/formationSessions')}
-            className="text-gray-400 hover:text-green-600 text-sm transition"
-          >
-            ← Retour aux sessions programmées
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -4,6 +4,19 @@ import { HiXCircle } from 'react-icons/hi';
 const PaymentError = () => {
   const navigate = useNavigate();
 
+
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  const handleReessayer = () => {
+    if (user.type === 'parent') {
+      navigate('/parent/paiements');
+    } else if (user.type === 'apprenant') {
+      navigate('/apprenant/mes-formations');
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-5">
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
@@ -17,7 +30,7 @@ const PaymentError = () => {
         </p>
         
         <button
-          onClick={() => navigate('/parent/paiements')}
+          onClick={handleReessayer}
           className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
         >
           Réessayer

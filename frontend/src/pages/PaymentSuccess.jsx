@@ -8,12 +8,24 @@ const PaymentSuccess = () => {
   const [countdown, setCountdown] = useState(5);
   const transactionId = searchParams.get('transaction_id');
 
+  // Récupérer l'utilisateur connecté
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          navigate('/parent/paiements');
+          
+          // Redirection selon le type d'utilisateur
+          if (user.type === 'parent') {
+            navigate('/parent/paiements');
+          } else if (user.type === 'apprenant') {
+            navigate('/apprenant/mes-formations');
+          } else {
+            navigate('/');
+          }
+          
           return 0;
         }
         return prev - 1;
@@ -21,7 +33,17 @@ const PaymentSuccess = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [navigate]);
+  }, [navigate, user.type]);
+
+  const handleRetour = () => {
+    if (user.type === 'parent') {
+      navigate('/parent/paiements');
+    } else if (user.type === 'apprenant') {
+      navigate('/apprenant/mes-formations');
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-5">
@@ -42,7 +64,7 @@ const PaymentSuccess = () => {
         </p>
         
         <button
-          onClick={() => navigate('/parent/paiements')}
+          onClick={handleRetour}
           className="mt-6 text-green-600 hover:text-green-700 text-sm font-medium"
         >
           Retour maintenant →

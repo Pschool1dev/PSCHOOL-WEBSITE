@@ -8,14 +8,12 @@ use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
+  
     public function run(): void
     {
-        // On utilise updateOrCreate pour éviter les erreurs si l'admin existe déjà
+      
         User::updateOrCreate(
-            ['email' => 'admin@pschool.pro'], // Condition de recherche
+            ['email' => 'admin@pschool.pro'], 
             [   'nom'      => 'Administrateur Principal',
                
                 'password' => Hash::make('admin2026P@'),

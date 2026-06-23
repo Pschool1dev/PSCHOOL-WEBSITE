@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  HiOutlineMenu,HiOutlineBookOpen,HiOutlineChartBar,
-  HiOutlineLogout, HiChevronRight,HiOutlineAcademicCap,HiOutlineUserCircle
+  HiOutlineMenu, HiOutlineBookOpen, HiOutlineChartBar,
+  HiOutlineLogout, HiChevronRight, HiOutlineAcademicCap, HiOutlineUserCircle
 } from 'react-icons/hi';
-import { useAuth } from '../../../contexts/AuthContext';
 
-const SidebarApprenant = () => {
+const SidebarFormateur = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const { setUserData } = useAuth();
+  const [userData, setUserData] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -18,7 +17,7 @@ const SidebarApprenant = () => {
       if (storedUser) {
         try {
           const user = JSON.parse(storedUser);
-          setUserData({ name: user.name || user.username || "Apprenant" });
+          setUserData({ name: user.name || user.username || "Formateur" });
         } catch (e) { console.error(e); }
       }
     };
@@ -32,7 +31,7 @@ const SidebarApprenant = () => {
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
-  }, [setUserData]);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -40,20 +39,19 @@ const SidebarApprenant = () => {
     window.location.href = '/';
   };
 
-   const menuItems = [
-      { path: '/formateur', name: 'Vue d\'ensemble', icon: HiOutlineChartBar },
-      { path: '/formateur/mes-formations', name: 'Mes Formations', icon: HiOutlineAcademicCap },
-      { path: '/formateur/gestion-cours', name: 'Gestion des Cours', icon: HiOutlineBookOpen },
-
-      { path: '/formateur/profil', name: 'Mon Profil', icon: HiOutlineUserCircle },
-    ];
+  const menuItems = [
+    { path: '/formateur', name: 'Vue d\'ensemble', icon: HiOutlineChartBar },
+    { path: '/formateur/mes-formations', name: 'Mes Formations', icon: HiOutlineAcademicCap },
+    { path: '/formateur/gestion-cours', name: 'Gestion des Cours', icon: HiOutlineBookOpen },
+    { path: '/formateur/profil', name: 'Mon Profil', icon: HiOutlineUserCircle },
+  ];
 
   return (
     <>
-     {isMobile && !isOpen && (
+      {isMobile && !isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed top-4  z-50 p-4   rounded-none "
+          className="fixed top-4 z-50 p-4"
         >
           <HiOutlineMenu className="h-6 w-6 text-gray-600" />
         </button>
@@ -71,7 +69,7 @@ const SidebarApprenant = () => {
           <span className="text-[9px] uppercase tracking-[0.3em] text-emerald-600 font-bold">Espace Formateur</span>
         </div>
 
-        {/* Navigation - */}
+        {/* Navigation */}
         <nav className="flex-1 px-4 py-8 space-y-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -84,12 +82,12 @@ const SidebarApprenant = () => {
                 onClick={() => isMobile && setIsOpen(false)}
                 className={`flex items-center justify-between px-5 py-3 rounded-xl transition-all ${
                   isActive 
-                    ? 'bg-blue-50 text-blue-600 '
+                    ? 'bg-blue-50 text-blue-600'
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
                 <div className="flex items-center">
-                  <Icon className={`h-5 w-5 mr-3 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                  <Icon className={`h-5 w-5 mr-3 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
                   <span className="text-sm font-medium tracking-tight">{item.name}</span>
                 </div>
                 {isActive && <HiChevronRight className="h-4 w-4 opacity-50" />}
@@ -98,7 +96,7 @@ const SidebarApprenant = () => {
           })}
         </nav>
 
-        {/* Logout  */}
+        {/* Logout */}
         <div className="p-6">
           <button 
             onClick={handleLogout}
@@ -117,4 +115,4 @@ const SidebarApprenant = () => {
   );
 };
 
-export default SidebarApprenant;
+export default SidebarFormateur;
