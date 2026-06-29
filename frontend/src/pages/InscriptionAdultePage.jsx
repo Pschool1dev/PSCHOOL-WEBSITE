@@ -263,7 +263,7 @@ const InscriptionAdultePage = () => {
           {/* Section Source */}
           <section className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">
             <h2 className="text-sm font-medium text-gray-700 uppercase tracking-wider mb-5 pb-3 border-b border-gray-50">
-              Comment nous avez-vous connu ? <span className='text-red-600'>*</span>
+              Comment vous nous-aviez connu ? <span className='text-red-600'>*</span>
             </h2>
             
             <div className="grid sm:grid-cols-3 gap-3">
